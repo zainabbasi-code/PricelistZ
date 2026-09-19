@@ -1,7 +1,7 @@
 <html lang="en" style="--brand-col: #c9a872; --brand-weight: 600; --brand-style: normal; --brand-transform: uppercase; --brand-size: 17px; --cat-title-size: 19px; --note-color: #7a6a88; --note-style: italic; --bg: #0a0a0a; --bg2: #111111; --surf: #1a1a1a; --surf2: #222222; --surf3: #2c2c2c; --cream: #f0f0f0; --cream2: #c8c0b0; --muted: #686868; --line: #242424; --line2: #363636; --accent: #c8a060; --new: #2a6e40; --glass-header: rgba(10,10,10,.92); --glass-filter: rgba(10,10,10,.96); --glass-info: rgba(10,10,10,.55); --cat-title-color: #8a3020;"><head>
 <meta charset="UTF-8">
-<meta name="build-timestamp" content="2026-09-15T10:50:39.859Z">
-<script data-vcheck="1">(function(){var V='2026-09-15T10:50:39.859Z';var KEY='_za_bounce';
+<meta name="build-timestamp" content="2026-09-19T04:51:22.485Z">
+<script data-vcheck="1">(function(){var V='2026-09-19T04:51:22.485Z';var KEY='_za_bounce';
 try{if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister();});}).catch(function(){});}}catch(e){}
 try{if(window.caches&&caches.keys){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k);});}).catch(function(){});}}catch(e){}
 var last_=0;
@@ -17,7 +17,7 @@ location.replace(location.pathname+'?v='+encodeURIComponent(live)+location.hash)
 check();
 window.addEventListener('pageshow',function(e){if(e.persisted)check();});
 document.addEventListener('visibilitychange',function(){if(!document.hidden)check();});})()</script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Zain A. · Decant Price List</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -32,6 +32,10 @@ document.addEventListener('visibilitychange',function(){if(!document.hidden)chec
   --r:12px;--card-r:16px;
   --brand-size:16px;--cat-title-size:13px;--note-color:#7a6a88;--note-style:italic;
   --glass-header:rgba(8,6,10,.88);--glass-filter:rgba(8,6,10,.94);--glass-info:rgba(8,6,10,.55);
+  /* Measured at runtime by setStackVars() — never hard-code these again.
+     --header-h = height of the sticky header (0 on mobile, where it scrolls away)
+     --stack-h  = header + filter bar, i.e. the true top of the scrollable catalogue */
+  --header-h:82px;--stack-h:132px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -59,7 +63,7 @@ body{font-family:var(--sans);color:var(--cream);background:var(--bg);min-height:
 .pill-min{background:rgba(138,48,80,.16);border:1px solid rgba(138,48,80,.28);color:#cc8aa0;border-radius:999px;padding:2px 10px;font-size:10px;font-weight:600;letter-spacing:.3px}
 
 /* FILTER BAR */
-.filter-bar{position:sticky;top:88px;z-index:90;background:var(--glass-filter);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.05);padding:0 28px;overflow:visible}
+.filter-bar{position:sticky;top:var(--header-h);z-index:90;background:var(--glass-filter);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.05);padding:0 28px;overflow:visible}
 .filter-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:10px 0;flex-wrap:wrap}
 .tabs{display:flex;gap:1px;flex-wrap:wrap}
 .tab{padding:7px 15px;border-radius:7px;font-size:12.5px;font-weight:500;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:.18s ease;font-family:var(--sans);letter-spacing:.1px}
@@ -92,8 +96,8 @@ body{font-family:var(--sans);color:var(--cream);background:var(--bg);min-height:
 .cat-section{margin-bottom:56px}
 .cat-head{display:flex;align-items:center;gap:12px;margin-bottom:22px;padding:14px 0 0;border-bottom:none}
 .cat-title{font-family:var(--sans);font-size:var(--cat-title-size,13px);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--cat-title-color,var(--cream));white-space:nowrap;flex-shrink:0}
-.cat-note{display:none}
-.cat-count{display:none}
+.cat-note{font-size:11px;font-style:italic;color:var(--note-color,var(--muted));letter-spacing:.2px;text-transform:none;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.cat-count{font-size:10.5px;font-weight:500;letter-spacing:.3px;text-transform:none;color:var(--muted);white-space:nowrap;flex-shrink:0;opacity:.8}
 /* Collapsible category headings (dropdown) */
 .cat-head{cursor:pointer;-webkit-user-select:none;user-select:none}.cat-head::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1);border-radius:1px}
 .cat-title::after{content:'\2212';display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:3px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:var(--muted);font-size:12px;line-height:1;vertical-align:middle;margin-left:8px;font-family:var(--sans);font-weight:300;font-style:normal;letter-spacing:0;text-transform:none;transition:.15s}
@@ -104,32 +108,62 @@ body{font-family:var(--sans);color:var(--cream);background:var(--bg);min-height:
 .cat-section.collapsed > *:not(.cat-head){display:none}
 .cat-section.collapsed{margin-bottom:18px}
 .brand-group{margin-bottom:36px;padding-top:16px;border-top:1px solid rgba(255,255,255,.04)}.brand-group:first-child{border-top:none;padding-top:0}
-.brand-label{font-family:var(--serif);font-size:var(--brand-size,16px);font-weight:var(--brand-weight,600);font-style:var(--brand-style,normal);text-transform:var(--brand-transform,none);color:var(--brand-col,var(--gold));letter-spacing:.5px;padding:0 20px 10px;display:flex;align-items:center;gap:8px}
+.brand-label{font-family:var(--serif);font-size:var(--brand-size,16px);font-weight:var(--brand-weight,600);font-style:var(--brand-style,normal);text-transform:var(--brand-transform,none);color:var(--brand-col,var(--gold));letter-spacing:.5px;padding:8px 20px 10px;display:flex;align-items:center;gap:8px;
+  /* #3 — pins under the header/filter stack while its items scroll past */
+  position:sticky;top:var(--stack-h);z-index:6;background:var(--glass-header);backdrop-filter:blur(12px) saturate(1.2)}
 .brand-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(201,168,114,.18),transparent);margin-left:6px}
-.item-row{display:flex;align-items:center;gap:12px;padding:11px 20px;transition:.15s ease;border-bottom:1px solid rgba(255,255,255,.03);cursor:default}
+
+/* ── #1 FIXED PRICE SLOTS ──────────────────────────────────
+   Every size owns a column, so 2ml/5ml/10ml line up down the page.
+   A missing size leaves an empty slot instead of shifting the row left.
+   --cols is per-category: categories with no 2ml drop that column. */
+.cat-section{--cols:1fr 84px 94px 94px 94px}
+.cat-section.no-2ml{--cols:1fr 84px 98px 98px}
+.item-row{display:grid;grid-template-columns:var(--cols);align-items:center;gap:7px;padding:11px 20px;transition:.15s ease;border-bottom:1px solid rgba(255,255,255,.03);cursor:default}
 .item-row:last-child{border-bottom:none}
 .item-row:hover{background:rgba(255,255,255,.02)}
-.item-info{flex:1;min-width:0}
-.item-name{font-size:14px;font-weight:500;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4}
+.item-info{min-width:0}
+.item-name{font-size:14px;font-weight:500;color:var(--cream);line-height:1.4;/* #5 — wraps instead of truncating */white-space:normal;overflow-wrap:anywhere}
+
+/* #2 — column header, one per category, matching the row grid exactly */
+.size-head{display:grid;grid-template-columns:var(--cols);gap:7px;padding:0 20px 9px;
+  font-size:9.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted);opacity:.75}
+.size-head span{text-align:center}
+.size-head .sh-name{text-align:left}
 .item-subtext{font-size:9.5px;color:var(--muted);margin-top:2px;font-style:italic;line-height:1.3;opacity:.75}
-.item-badges{display:flex;gap:4px;flex-shrink:0}
+.item-badges{display:flex;gap:4px;flex-shrink:0;min-width:0}
 .badge{font-size:11px;font-weight:500;letter-spacing:.1px;text-transform:none;padding:0;border-radius:0;background:none;border:none;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;color:var(--muted)}.badge::before{content:'';width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block}
 .badge-new::before{background:#2a8a50}.badge-new{color:var(--muted)}
 .badge-limited{display:none}
 .badge-sold::before{background:#888}.badge-sold{color:var(--muted)}
 .badge-hot::before{background:#c05800}.badge-hot{color:var(--muted)}
-.sizes{display:flex;gap:4px;flex-shrink:0}
-.sz-btn{padding:5px 12px;border-radius:7px;font-size:12px;font-weight:600;border:1.5px solid var(--line);background:var(--surf);color:var(--cream2);cursor:pointer;transition:.15s ease;font-family:var(--sans);white-space:nowrap;display:inline-flex;flex-direction:row;align-items:center;gap:5px;line-height:1.4;box-shadow:0 1px 4px rgba(0,0,0,.09)}
+/* display:contents lets the buttons become direct grid items of .item-row,
+   so each one lands in its own fixed column. .sz-slot holds an empty column open. */
+.sizes{display:contents}
+/* An unavailable size gets a ghost pill: same shape and position as a real
+   button, dashed and unfilled. Keeps the row's rhythm so a lone price no
+   longer looks like a half-loaded page, and says plainly that the size
+   isn't offered. Colours come from theme vars so it follows every theme. */
+.sz-slot{display:inline-flex;align-items:center;justify-content:center;padding:5px 7px;border-radius:7px;
+  border:1.5px dashed var(--line);background:transparent;color:var(--muted);font-size:12px;font-weight:600;
+  line-height:1.4;text-align:center;opacity:.55;pointer-events:none;-webkit-user-select:none;user-select:none}
+.sz-btn{padding:5px 7px;border-radius:7px;font-size:12px;font-weight:600;border:1.5px solid var(--line);background:var(--surf);color:var(--cream2);cursor:pointer;transition:.15s ease;font-family:var(--sans);white-space:nowrap;display:inline-flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;line-height:1.4;box-shadow:0 1px 4px rgba(0,0,0,.09);min-width:0}
+/* A sale button carries an extra struck-through price, so it drops the
+   size/price separator dot to claw back the width it needs. */
+.sz-btn.on-sale{padding-left:5px;padding-right:5px;gap:3px}
+.sz-btn.on-sale>span:first-child::after{content:none}
 .sz-btn:hover{border-color:rgba(201,168,114,.65);color:var(--gold);background:var(--surf2);transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.13)}
 .sz-btn.selected{background:var(--gold);border-color:var(--gold);color:#1a1510;box-shadow:0 2px 8px rgba(201,168,114,.35);font-weight:700}.sz-btn.selected::before{content:"\2713";margin-right:3px;font-weight:700;font-size:11px}
 
-.sz-btn span{font-size:12px;font-weight:700;color:inherit;opacity:1}.sz-btn span::after{content:"·";margin-left:4px;opacity:.45;font-weight:300}
-.sz-btn.selected span{opacity:1}
-.sz-soldout{padding:4px 12px;border-radius:999px;font-size:11px;border:1px solid rgba(255,255,255,.06);background:transparent;color:var(--muted);font-style:italic;pointer-events:none}
+.sz-btn>span:first-child{font-size:12px;font-weight:700;color:inherit;opacity:1}
+.sz-btn>span:first-child::after{content:"\00b7";margin-left:4px;opacity:.45;font-weight:300}
+.sz-btn.selected>span:first-child{opacity:1}
+.sz-soldout{padding:4px 12px;border-radius:999px;font-size:11px;border:1px solid rgba(255,255,255,.06);background:transparent;color:var(--muted);font-style:italic;pointer-events:none;text-align:center;grid-column:3/-1}
+.sz-was{white-space:nowrap}
 .no-results{text-align:center;padding:80px 0;color:var(--muted);font-style:italic;font-size:15px}
 
 /* CART PANEL */
-.cart-panel{position:sticky;top:calc(88px + 50px + 12px);max-height:calc(100vh - 88px - 50px - 48px);display:flex;flex-direction:column;background:var(--surf);border:1px solid var(--line2);border-radius:var(--card-r);overflow:hidden}
+.cart-panel{position:sticky;top:calc(var(--stack-h) + 12px);max-height:calc(100vh - var(--stack-h) - 36px);display:flex;flex-direction:column;background:var(--surf);border:1px solid var(--line2);border-radius:var(--card-r);overflow:hidden}
 .cart-head{padding:18px 20px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .cart-head h2{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--cream)}
 .cart-head .sub{font-size:12px;color:var(--muted);margin-top:2px} .cart-scroll-hint{font-size:11px;color:var(--muted);text-align:center;padding:4px 0 8px;display:none}.cart-scroll-hint.show{display:block}
@@ -187,7 +221,7 @@ body{font-family:var(--sans);color:var(--cream);background:var(--bg);min-height:
   .cart-panel.open{transform:translateY(0)}
   .cart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;backdrop-filter:blur(4px)}
   .cart-overlay.show{display:block}
-  .fab{display:flex;position:fixed;bottom:24px;right:24px;z-index:180;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#a07030,#c9a872);align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 28px rgba(201,168,114,.4);transition:.2s ease;border:none}
+  .fab{display:flex;position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));right:24px;z-index:180;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#a07030,#c9a872);align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 28px rgba(201,168,114,.4);transition:.2s ease;border:none}
   .fab:hover{transform:scale(1.07)}
   .fab-badge{position:absolute;top:-2px;right:-2px;width:20px;height:20px;border-radius:50%;background:#c9a872;color:#0a0810;font-size:11px;font-weight:700;display:none;align-items:center;justify-content:center;border:2px solid var(--bg)}
 }
@@ -228,7 +262,8 @@ body{font-family:var(--sans);color:var(--cream);background:var(--bg);min-height:
 
 /* SALE BADGE + PRICE STYLING */
 .badge-sale::before{background:#c03030}.badge-sale{color:var(--muted)}
-.sz-was{font-size:10px;text-decoration:line-through;opacity:.45;color:inherit}
+.sz-was{font-size:9.5px;text-decoration:line-through;opacity:.45;color:inherit;margin-right:3px}
+.sz-px{white-space:nowrap}
 .sz-btn.on-sale{border-color:rgba(180,30,30,.32);color:#c03030;background:rgba(180,30,30,.04)}
 .sz-btn.on-sale:hover{border-color:rgba(180,30,30,.6);background:rgba(180,30,30,.08);transform:translateY(-1px)}
 .sz-btn.on-sale.selected{background:rgba(180,30,30,.12);border-color:rgba(180,30,30,.48);color:#c03030}
@@ -253,7 +288,7 @@ body{font-family:var(--sans);color:var(--cream);background:var(--bg);min-height:
 body.compact .item-row{padding:7px 20px}
 body.compact .brand-group{margin-bottom:26px;padding-top:12px}
 body.compact .item-name{font-size:13px}
-body.compact .brand-label{padding:0 20px 8px}
+body.compact .brand-label{padding:7px 20px 8px}
 body.compact .cat-section{margin-bottom:48px}
 
 /* UNSAVED CHANGES BANNER */
@@ -417,8 +452,11 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
   .header-info-strip .info-sep{display:none}
   .pill-min{font-size:9.5px;padding:1px 8px}
 
-  /* Filter bar — non-sticky on mobile (avoids variable header-height overlap) */
-  .filter-bar{position:static;top:auto;padding:0 14px;overflow:visible}
+  /* #6 — Filter bar stays pinned on mobile. The header is released so the two
+     don't eat 160px of a phone screen; the cart stays reachable via the FAB and
+     the mini bar. --header-h is set to 0 by setStackVars() below 768px. */
+  #header{position:relative;top:auto}
+  .filter-bar{position:sticky;top:0;z-index:95;padding:0 14px;overflow:visible}
   .filter-inner{padding:8px 0;gap:6px;flex-wrap:wrap;overflow:visible}
   .tabs{display:flex;gap:2px;flex-wrap:wrap;flex-shrink:1}
   .tab{padding:6px 11px;font-size:12px;white-space:nowrap}
@@ -437,25 +475,53 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
   .brand-group{padding-top:12px;margin-bottom:24px}
   .brand-label{font-size:11px}
 
-  /* Item rows — name on top, sizes wrap below, all left-aligned */
-  .item-row{flex-wrap:wrap;gap:6px 8px;padding:11px 4px;align-items:flex-start}
+  /* Item rows — name on top, sizes below.
+     #2 — the sizes are an even 3-column grid rather than wrapped flex. With
+     flex each button was only as wide as its text ("2ml · $15" vs "10ml · $55"),
+     so nothing lined up row to row — the desktop problem, still here. Equal
+     columns fix that and give each button ~44px of height, which is the
+     reliable thumb target; the label stacks above the price to suit the shape. */
+  .item-row{display:flex;flex-wrap:wrap;gap:6px 8px;padding:11px 4px;align-items:flex-start}
   .item-info{flex:1 1 auto;min-width:0}
   .item-name{font-size:14px;white-space:normal}
-  .item-subtext{font-size:9.5px}
+  /* #3 — was 9.5px at .75 opacity, the smallest text on the page, and it
+     carries the DNA notes and batch years people actually buy on. */
+  .item-subtext{font-size:11px;opacity:.9;margin-top:3px;line-height:1.35}
   .item-badges{flex-shrink:0;order:2}
-  .sizes{order:3;width:100%;justify-content:flex-start;gap:6px;flex-wrap:wrap;margin-top:2px}
-  .sz-btn{padding:6px 12px;font-size:12px;border-radius:6px;gap:4px}
-  .sz-btn span{font-size:11px}
+  .sizes{display:grid;grid-template-columns:repeat(3,1fr);order:3;width:100%;gap:6px;margin-top:5px}
+  .cat-section.no-2ml .sizes{grid-template-columns:repeat(2,1fr)}
+  .size-head{display:none}
+  .sz-btn{flex-direction:column;justify-content:center;gap:1px;min-height:44px;padding:6px 4px;
+    font-size:12.5px;border-radius:8px;width:100%}
+  .sz-btn>span:first-child{font-size:9.5px;font-weight:700;letter-spacing:.4px;opacity:.72}
+  .sz-btn>span:first-child::after{content:none}
+  .sz-btn.selected>span:first-child{opacity:.85}
+  .sz-btn.on-sale{padding:6px 4px}
+  /* Ghost pills come back here — they hold the empty column open so the
+     grid stays aligned, same as on desktop. */
+  .sz-slot{display:grid;place-items:center;min-height:44px;padding:6px 4px;border-radius:8px;font-size:12px}
+  .sz-soldout{grid-column:1/-1;padding:10px 12px}
 
   /* Cart bottom sheet */
-  .cart-panel{max-height:88vh}
+  .cart-panel{max-height:88vh;padding-bottom:env(safe-area-inset-bottom,0px)}
+  @supports(height:100dvh){.cart-panel{max-height:88dvh}}
   .cart-head{padding:16px 16px 12px}
   .cart-body{padding:0 16px}
+  /* #5 — these were 22px squares sitting a few pixels apart, never resized
+     for touch. A mistap on − or × changes or deletes the wrong line right
+     before the order gets sent, so they're the highest-consequence buttons
+     on the site and were half the minimum target. */
+  .cart-item{padding:12px 0}
+  .ci-right{gap:8px}
+  .ci-qty{gap:8px}
+  .ci-qty button{width:36px;height:36px;border-radius:9px;font-size:16px}
+  .ci-qty span{font-size:14px;min-width:20px}
+  .ci-rm{width:36px;height:36px;border-radius:9px;font-size:14px}
 
   /* FAB + scroll-to-top */
-  .fab{width:54px;height:54px;bottom:18px;right:18px}
+  .fab{width:54px;height:54px;bottom:calc(18px + env(safe-area-inset-bottom,0px));right:18px}
   .fab-badge{font-size:10px}
-  #scroll-top{bottom:82px;right:18px;width:40px;height:40px;font-size:16px}
+  #scroll-top{bottom:calc(82px + env(safe-area-inset-bottom,0px));right:18px;width:40px;height:40px;font-size:16px}
 
   /* Footer */
   .site-footer{padding:14px 14px 28px;flex-wrap:wrap;gap:10px;font-size:11px;text-align:center;justify-content:center}
@@ -484,12 +550,35 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
 /* STICKY MOBILE CART SUMMARY */
 .cart-mini{display:none}
 @media(max-width:1080px){
-  .cart-mini{position:fixed;left:0;right:0;bottom:0;z-index:170;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--gold);color:#1a1510;box-shadow:0 -4px 20px rgba(0,0,0,.3);transform:translateY(100%);transition:transform .25s ease;cursor:pointer}
+  /* Floating capsule, inset from the edges and lifted off the bottom so it
+     clears Safari's toolbar and the home indicator. The old full-bleed 45px
+     strip sat flush to the screen edge and lost its lower third to browser
+     chrome. env() keeps it honest on notched iPhones. */
+  .cart-mini{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:170;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:11px 12px 11px 16px;border-radius:16px;background:var(--gold);color:#1a1510;
+    box-shadow:0 10px 30px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.10);
+    transform:translateY(calc(100% + 28px));
+    transition:transform .34s cubic-bezier(.34,1.28,.64,1);cursor:pointer;
+    -webkit-user-select:none;user-select:none}
   .cart-mini.show{transform:translateY(0)}
-  .cart-mini .cm-left{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
-  .cart-mini .cm-right{font-size:13px;font-weight:700;display:flex;align-items:center;gap:5px}
-  /* lift the FAB above the mini bar when it shows so they don't overlap */
-  .cart-mini.show ~ .fab{bottom:74px}
+  .cart-mini .cm-left{display:flex;flex-direction:column;line-height:1.15;min-width:0;gap:1px}
+  .cart-mini .cm-k{font-size:9.5px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;opacity:.62;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cart-mini .cm-v{font-size:19px;font-weight:800;letter-spacing:.2px}
+  /* A real button, not a line of text — the old version didn't look pressable. */
+  .cart-mini .cm-right{flex:none;background:#1a1510;color:#e8d5b0;border-radius:999px;padding:11px 17px;
+    font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;white-space:nowrap;
+    box-shadow:0 2px 10px rgba(0,0,0,.28)}
+  .cart-mini .cm-right svg{width:15px;height:15px;flex:none}
+  /* One cart prompt at a time. The floating circle, the header badge and this
+     bar were all showing the same number within 100px of each other. */
+  .cart-mini.show ~ .fab{display:none}
+  /* Reserve real space for the capsule so the last rows of the catalogue are
+     never parked underneath it, and lift the toast clear of it too. */
+  body.mini-on .main-grid{padding-bottom:168px}
+  body.mini-on #toast{bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+  body.mini-on #scroll-top{bottom:calc(104px + env(safe-area-inset-bottom,0px))}
 }
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -801,7 +890,7 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
       
     </div>
     <div class="item-badges"><span class="badge badge-new">New</span></div>
-    <div class="sizes"><button class="sz-btn " onclick="toggleSize(137,'2ml',19)"><span>2ml</span>$19</button><button class="sz-btn " onclick="toggleSize(137,'5ml',38)"><span>5ml</span>$38</button><button class="sz-btn " onclick="toggleSize(137,'10ml',70)"><span>10ml</span>$70</button></div>
+    <div class="sizes"><button class="sz-btn " onclick="toggleSize(137,'2ml',20)"><span>2ml</span>$20</button><button class="sz-btn " onclick="toggleSize(137,'5ml',40)"><span>5ml</span>$40</button><button class="sz-btn " onclick="toggleSize(137,'10ml',75)"><span>10ml</span>$75</button></div>
   </div>
           </div>
           <div class="brand-group">
@@ -1445,7 +1534,7 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
         <div class="cat-head">
           <span class="cat-title">Middle Eastern Fragrances</span>
           
-          <span class="cat-count">50 available</span>
+          <span class="cat-count">52 available</span>
         </div>
         
           <div class="brand-group">
@@ -1776,6 +1865,24 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
             <div class="brand-label">Rasasi</div>
             <div class="item-row">
     <div class="item-info">
+      <div class="item-name">Shuhrah</div>
+      
+    </div>
+    
+    <div class="sizes"><button class="sz-btn " onclick="toggleSize(93,'5ml',7)"><span>5ml</span>$7</button><button class="sz-btn " onclick="toggleSize(93,'10ml',12)"><span>10ml</span>$12</button></div>
+  </div>
+          </div>
+          <div class="brand-group">
+            <div class="brand-label">Rasasi Hawas</div>
+            <div class="item-row">
+    <div class="item-info">
+      <div class="item-name">Hawas Ice</div>
+      
+    </div>
+    <div class="item-badges"><span class="badge badge-new">New</span></div>
+    <div class="sizes"><button class="sz-btn " onclick="toggleSize(164,'5ml',7)"><span>5ml</span>$7</button><button class="sz-btn " onclick="toggleSize(164,'10ml',12)"><span>10ml</span>$12</button></div>
+  </div><div class="item-row">
+    <div class="item-info">
       <div class="item-name">Hawas Sapphire</div>
       
     </div>
@@ -1816,13 +1923,6 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
     </div>
     <div class="item-badges"><span class="badge badge-hot">Popular</span></div>
     <div class="sizes"><button class="sz-btn " onclick="toggleSize(89,'5ml',7)"><span>5ml</span>$7</button><button class="sz-btn " onclick="toggleSize(89,'10ml',12)"><span>10ml</span>$12</button></div>
-  </div><div class="item-row">
-    <div class="item-info">
-      <div class="item-name">Shuhrah</div>
-      
-    </div>
-    
-    <div class="sizes"><button class="sz-btn " onclick="toggleSize(93,'5ml',7)"><span>5ml</span>$7</button><button class="sz-btn " onclick="toggleSize(93,'10ml',12)"><span>10ml</span>$12</button></div>
   </div>
           </div>
           <div class="brand-group">
@@ -1841,6 +1941,17 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
     </div>
     <div class="item-badges"><span class="badge badge-hot">Popular</span></div>
     <div class="sizes"><button class="sz-btn " onclick="toggleSize(95,'5ml',6)"><span>5ml</span>$6</button><button class="sz-btn " onclick="toggleSize(95,'10ml',11)"><span>10ml</span>$11</button></div>
+  </div>
+          </div>
+          <div class="brand-group">
+            <div class="brand-label">Riiffs</div>
+            <div class="item-row">
+    <div class="item-info">
+      <div class="item-name">Freeze</div>
+      
+    </div>
+    <div class="item-badges"><span class="badge badge-new">New</span></div>
+    <div class="sizes"><button class="sz-btn " onclick="toggleSize(165,'5ml',6)"><span>5ml</span>$6</button><button class="sz-btn " onclick="toggleSize(165,'10ml',11)"><span>10ml</span>$11</button></div>
   </div>
           </div>
           <div class="brand-group">
@@ -1908,8 +2019,14 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
 </div>
 
 <div class="cart-mini" id="cart-mini" onclick="toggleCart()" role="button" aria-label="View your order">
-  <span class="cm-left"><span id="cart-mini-count">0 items</span></span>
-  <span class="cm-right"><span id="cart-mini-total">$0</span> · View order →</span>
+  <span class="cm-left">
+    <span class="cm-k" id="cart-mini-count">0 items</span>
+    <span class="cm-v" id="cart-mini-total">$0</span>
+  </span>
+  <span class="cm-right">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+    View order →
+  </span>
 </div>
 <button class="fab" id="fab" onclick="toggleCart()" aria-label="View your order">
   <svg width="22" height="22" fill="none" stroke="#0a0810" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
@@ -2010,7 +2127,7 @@ Total: $58</div>
     <div class="editor-sub">
       <div class="tabs" id="editor-tabs"><button class="tab active" onclick="editorSetCat(this,'all')">All</button><button class="tab " onclick="editorSetCat(this,'niche')">Niche Fragrances</button><button class="tab " onclick="editorSetCat(this,'designer')">Designer Fragrances</button><button class="tab " onclick="editorSetCat(this,'middle')">Middle Eastern Fragrances</button></div>
       <input id="editor-search" type="search" placeholder="Search…" oninput="renderEditorTable()">
-      <span class="editor-stat" id="editor-stat">136 of 136 items</span>
+      <span class="editor-stat" id="editor-stat">138 of 138 items</span>
     </div>
 
     <div class="editor-table-wrap">
@@ -2347,8 +2464,8 @@ Total: $58</div>
       <td class="td-brand">Ex Nihilo</td>
       <td class="td-name">Blue Talisman Extrait</td>
       <td>Niche Fragrances</td>
-      <td class="td-price">$38</td>
-      <td class="td-price">$70</td>
+      <td class="td-price">$40</td>
+      <td class="td-price">$75</td>
       <td><span class="e-badge-new">NEW</span></td>
       <td>—</td>
       <td class="td-note" title="Click to add a note" onclick="inlineEditNote(137,this)" style="cursor:pointer"><span style="color:var(--line2)">— add note</span></td>
@@ -2580,7 +2697,7 @@ Total: $58</div>
           <span class="drag-handle-cell" title="Drag to reorder (desktop)">⠿</span>
           <div style="display:flex;flex-direction:column;gap:2px">
             <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:1;line-height:1.2" onclick="moveProduct(162,-1)" title="Move up">↑</button>
-            <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:0.3;line-height:1.2" onclick="moveProduct(162,1)" disabled="" title="Move down">↓</button>
+            <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:1;line-height:1.2" onclick="moveProduct(162,1)" title="Move down">↓</button>
           </div>
         </div>
       </td>
@@ -5046,6 +5163,54 @@ Total: $58</div>
         <button class="e-btn danger" style="padding:5px 10px;font-size:12px" onclick="deleteProduct(88)">🗑</button>
       </td>
     </tr><tr class="e-brand-hdr-row"><td colspan="10">Rasasi</td></tr>
+    <tr class="" draggable="true" data-id="93" ondragstart="rowDragStart(event,93)" ondragover="rowDragOver(event)" ondrop="rowDrop(event,93)" ondragend="rowDragEnd(event)">
+      <td style="white-space:nowrap;text-align:center;padding:4px 6px">
+        <div style="display:flex;align-items:center;gap:4px;justify-content:center">
+          <span class="drag-handle-cell" title="Drag to reorder (desktop)">⠿</span>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:1;line-height:1.2" onclick="moveProduct(93,-1)" title="Move up">↑</button>
+            <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:1;line-height:1.2" onclick="moveProduct(93,1)" title="Move down">↓</button>
+          </div>
+        </div>
+      </td>
+      <td class="td-brand">Rasasi</td>
+      <td class="td-name">Shuhrah</td>
+      <td>Middle Eastern Fragrances</td>
+      <td class="td-price">$7</td>
+      <td class="td-price">$12</td>
+      <td>—</td>
+      <td>—</td>
+      <td class="td-note" title="Click to add a note" onclick="inlineEditNote(93,this)" style="cursor:pointer"><span style="color:var(--line2)">— add note</span></td>
+      <td class="td-actions">
+        <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="openEditForm(93)">✏ Edit</button>
+        <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="duplicateProduct(93)" title="Duplicate">⎘</button>
+        <button class="e-btn danger" style="padding:5px 10px;font-size:12px" onclick="deleteProduct(93)">🗑</button>
+      </td>
+    </tr><tr class="e-brand-hdr-row"><td colspan="10">Rasasi Hawas</td></tr>
+    <tr class="" draggable="true" data-id="164" ondragstart="rowDragStart(event,164)" ondragover="rowDragOver(event)" ondrop="rowDrop(event,164)" ondragend="rowDragEnd(event)">
+      <td style="white-space:nowrap;text-align:center;padding:4px 6px">
+        <div style="display:flex;align-items:center;gap:4px;justify-content:center">
+          <span class="drag-handle-cell" title="Drag to reorder (desktop)">⠿</span>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:1;line-height:1.2" onclick="moveProduct(164,-1)" title="Move up">↑</button>
+            <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:1;line-height:1.2" onclick="moveProduct(164,1)" title="Move down">↓</button>
+          </div>
+        </div>
+      </td>
+      <td class="td-brand">Rasasi Hawas</td>
+      <td class="td-name">Hawas Ice</td>
+      <td>Middle Eastern Fragrances</td>
+      <td class="td-price">$7</td>
+      <td class="td-price">$12</td>
+      <td><span class="e-badge-new">NEW</span></td>
+      <td>—</td>
+      <td class="td-note" title="Click to add a note" onclick="inlineEditNote(164,this)" style="cursor:pointer"><span style="color:var(--line2)">— add note</span></td>
+      <td class="td-actions">
+        <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="openEditForm(164)">✏ Edit</button>
+        <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="duplicateProduct(164)" title="Duplicate">⎘</button>
+        <button class="e-btn danger" style="padding:5px 10px;font-size:12px" onclick="deleteProduct(164)">🗑</button>
+      </td>
+    </tr>
     <tr class="" draggable="true" data-id="139" ondragstart="rowDragStart(event,139)" ondragover="rowDragOver(event)" ondrop="rowDrop(event,139)" ondragend="rowDragEnd(event)">
       <td style="white-space:nowrap;text-align:center;padding:4px 6px">
         <div style="display:flex;align-items:center;gap:4px;justify-content:center">
@@ -5056,7 +5221,7 @@ Total: $58</div>
           </div>
         </div>
       </td>
-      <td class="td-brand">Rasasi</td>
+      <td class="td-brand">Rasasi Hawas</td>
       <td class="td-name">Hawas Sapphire</td>
       <td>Middle Eastern Fragrances</td>
       <td class="td-price">$7</td>
@@ -5080,7 +5245,7 @@ Total: $58</div>
           </div>
         </div>
       </td>
-      <td class="td-brand">Rasasi</td>
+      <td class="td-brand">Rasasi Hawas</td>
       <td class="td-name">Hawas Kobra</td>
       <td>Middle Eastern Fragrances</td>
       <td class="td-price">$7</td>
@@ -5104,7 +5269,7 @@ Total: $58</div>
           </div>
         </div>
       </td>
-      <td class="td-brand">Rasasi</td>
+      <td class="td-brand">Rasasi Hawas</td>
       <td class="td-name">Hawas Verde</td>
       <td>Middle Eastern Fragrances</td>
       <td class="td-price">$7</td>
@@ -5128,7 +5293,7 @@ Total: $58</div>
           </div>
         </div>
       </td>
-      <td class="td-brand">Rasasi</td>
+      <td class="td-brand">Rasasi Hawas</td>
       <td class="td-name">Hawas London</td>
       <td>Middle Eastern Fragrances</td>
       <td class="td-price">$6</td>
@@ -5152,7 +5317,7 @@ Total: $58</div>
           </div>
         </div>
       </td>
-      <td class="td-brand">Rasasi</td>
+      <td class="td-brand">Rasasi Hawas</td>
       <td class="td-name">Hawas Fire</td>
       <td>Middle Eastern Fragrances</td>
       <td class="td-price">$7</td>
@@ -5176,7 +5341,7 @@ Total: $58</div>
           </div>
         </div>
       </td>
-      <td class="td-brand">Rasasi</td>
+      <td class="td-brand">Rasasi Hawas</td>
       <td class="td-name">Hawas Black</td>
       <td>Middle Eastern Fragrances</td>
       <td class="td-price">$7</td>
@@ -5188,30 +5353,6 @@ Total: $58</div>
         <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="openEditForm(89)">✏ Edit</button>
         <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="duplicateProduct(89)" title="Duplicate">⎘</button>
         <button class="e-btn danger" style="padding:5px 10px;font-size:12px" onclick="deleteProduct(89)">🗑</button>
-      </td>
-    </tr>
-    <tr class="" draggable="true" data-id="93" ondragstart="rowDragStart(event,93)" ondragover="rowDragOver(event)" ondrop="rowDrop(event,93)" ondragend="rowDragEnd(event)">
-      <td style="white-space:nowrap;text-align:center;padding:4px 6px">
-        <div style="display:flex;align-items:center;gap:4px;justify-content:center">
-          <span class="drag-handle-cell" title="Drag to reorder (desktop)">⠿</span>
-          <div style="display:flex;flex-direction:column;gap:2px">
-            <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:1;line-height:1.2" onclick="moveProduct(93,-1)" title="Move up">↑</button>
-            <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:1;line-height:1.2" onclick="moveProduct(93,1)" title="Move down">↓</button>
-          </div>
-        </div>
-      </td>
-      <td class="td-brand">Rasasi</td>
-      <td class="td-name">Shuhrah</td>
-      <td>Middle Eastern Fragrances</td>
-      <td class="td-price">$7</td>
-      <td class="td-price">$12</td>
-      <td>—</td>
-      <td>—</td>
-      <td class="td-note" title="Click to add a note" onclick="inlineEditNote(93,this)" style="cursor:pointer"><span style="color:var(--line2)">— add note</span></td>
-      <td class="td-actions">
-        <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="openEditForm(93)">✏ Edit</button>
-        <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="duplicateProduct(93)" title="Duplicate">⎘</button>
-        <button class="e-btn danger" style="padding:5px 10px;font-size:12px" onclick="deleteProduct(93)">🗑</button>
       </td>
     </tr><tr class="e-brand-hdr-row"><td colspan="10">Rayhaan</td></tr>
     <tr class="" draggable="true" data-id="94" ondragstart="rowDragStart(event,94)" ondragover="rowDragOver(event)" ondrop="rowDrop(event,94)" ondragend="rowDragEnd(event)">
@@ -5260,6 +5401,30 @@ Total: $58</div>
         <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="openEditForm(95)">✏ Edit</button>
         <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="duplicateProduct(95)" title="Duplicate">⎘</button>
         <button class="e-btn danger" style="padding:5px 10px;font-size:12px" onclick="deleteProduct(95)">🗑</button>
+      </td>
+    </tr><tr class="e-brand-hdr-row"><td colspan="10">Riiffs</td></tr>
+    <tr class="" draggable="true" data-id="165" ondragstart="rowDragStart(event,165)" ondragover="rowDragOver(event)" ondrop="rowDrop(event,165)" ondragend="rowDragEnd(event)">
+      <td style="white-space:nowrap;text-align:center;padding:4px 6px">
+        <div style="display:flex;align-items:center;gap:4px;justify-content:center">
+          <span class="drag-handle-cell" title="Drag to reorder (desktop)">⠿</span>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:1;line-height:1.2" onclick="moveProduct(165,-1)" title="Move up">↑</button>
+            <button class="e-btn" style="padding:2px 7px;font-size:12px;opacity:0.3;line-height:1.2" onclick="moveProduct(165,1)" disabled="" title="Move down">↓</button>
+          </div>
+        </div>
+      </td>
+      <td class="td-brand">Riiffs</td>
+      <td class="td-name">Freeze</td>
+      <td>Middle Eastern Fragrances</td>
+      <td class="td-price">$6</td>
+      <td class="td-price">$11</td>
+      <td><span class="e-badge-new">NEW</span></td>
+      <td>—</td>
+      <td class="td-note" title="Click to add a note" onclick="inlineEditNote(165,this)" style="cursor:pointer"><span style="color:var(--line2)">— add note</span></td>
+      <td class="td-actions">
+        <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="openEditForm(165)">✏ Edit</button>
+        <button class="e-btn" style="padding:5px 10px;font-size:12px" onclick="duplicateProduct(165)" title="Duplicate">⎘</button>
+        <button class="e-btn danger" style="padding:5px 10px;font-size:12px" onclick="deleteProduct(165)">🗑</button>
       </td>
     </tr><tr class="e-brand-hdr-row"><td colspan="10">Swiss Arabian</td></tr>
     <tr class="" draggable="true" data-id="144" ondragstart="rowDragStart(event,144)" ondragover="rowDragOver(event)" ondrop="rowDrop(event,144)" ondragend="rowDragEnd(event)">
@@ -5390,7 +5555,7 @@ Total: $58</div>
         <div id="cat-mgr-list"><div class="cat-mgr-row" id="cmr-niche">
       <span class="cat-mgr-handle" title="Drag to reorder">⠿</span>
       <input class="cat-mgr-input" value="Niche Fragrances" oninput="CATS[0].label=this.value;renderTabs();renderEditorTabs();renderCatNoteInputs();markUnsaved();renderCatalog()" title="Click to rename">
-      <span class="cat-mgr-count">52 items</span>
+      <span class="cat-mgr-count">49 items</span>
       <button class="e-btn" style="padding:4px 7px;font-size:12px;opacity:0.3" onclick="moveCat(0,-1)" disabled="" title="Move up">↑</button>
       <button class="e-btn" style="padding:4px 7px;font-size:12px;opacity:1" onclick="moveCat(0,1)" title="Move down">↓</button>
       <button class="e-btn danger" style="padding:4px 7px;font-size:11px;opacity:0.3" onclick="deleteCat('niche')" disabled="" title="Move or delete items first">🗑</button>
@@ -5628,7 +5793,7 @@ Total: $58</div>
 <div class="emod-wrap" id="emod">
   <div class="emod">
     <h3 id="emod-title">Edit Fragrance</h3>
-    <input type="hidden" id="emod-id" value="149">
+    <input type="hidden" id="emod-id" value="137">
     <div class="emod-grid" style="row-gap:14px">
       <div class="emod-field emod-full">
         <label>Category</label>
@@ -5693,16 +5858,24 @@ const WHATSAPP = '61481957543';
 const EDITOR_PASS = 'zain2026';
 
 //##SETTINGS_BEGIN##
-const DEFAULT_SETTINGS={"title":"Zain A.","subtitle":"Fragrance Decants","lastUpdated":"15 Sep 2026","pickup":"Mill Park 3082","postageUntracked":5,"postageTracked":10,"minimum":30,"brandColor":"#c9a872","brandStyle":"caps","priceFormat":"pipe","brandSize":17,"catTitleSize":19,"noteColor":"#7a6a88","noteStyle":"italic","theme":"noir","orderPrefix":"Here's my order:","orderSuffix":"","infoNote":"Labelled glass atomiser bottles","how1":"Send a list of what you want.","how2":"Pick your size: 5ml or 10ml.","how3":"Confirm pickup or postage.","how4":"Payment details after order confirmation.","orderPostageNote":"Tracked post recommended. Untracked at buyer's risk.","catTitleColor":"#8a3020"};
+const DEFAULT_SETTINGS={"title":"Zain A.","subtitle":"Fragrance Decants","lastUpdated":"19 Sep 2026","pickup":"Mill Park 3082","postageUntracked":5,"postageTracked":10,"minimum":30,"brandColor":"#c9a872","brandStyle":"caps","priceFormat":"pipe","brandSize":17,"catTitleSize":19,"noteColor":"#7a6a88","noteStyle":"italic","theme":"noir","orderPrefix":"Here's my order:","orderSuffix":"","infoNote":"Labelled glass atomiser bottles","how1":"Send a list of what you want.","how2":"Pick your size: 5ml or 10ml.","how3":"Confirm pickup or postage.","how4":"Payment details after order confirmation.","orderPostageNote":"Tracked post recommended. Untracked at buyer's risk.","catTitleColor":"#8a3020"};
 //##SETTINGS_END##
 
 // Load settings from localStorage
 let SETTINGS={...DEFAULT_SETTINGS};
-try{const _s=localStorage.getItem('za_settings_v1');if(_s) SETTINGS={...DEFAULT_SETTINGS,...JSON.parse(_s)};}catch(e){}
+// Only the admin's own browser should carry a settings snapshot. The old
+// za_settings_v1 key was also written by the CUSTOMER theme picker, which
+// froze minimum, postage, pickup, title and lastUpdated at whatever they were
+// that day — so those visitors never saw a published update again. The key is
+// bumped to v2 to drop every poisoned snapshot already out there; the customer's
+// theme choice survives separately in za_cust_theme.
+try{localStorage.removeItem('za_settings_v1');}catch(e){}
+try{const _s=localStorage.getItem('za_settings_v2');if(_s) SETTINGS={...DEFAULT_SETTINGS,...JSON.parse(_s)};}catch(e){}
+try{const _t=localStorage.getItem('za_cust_theme');if(_t) SETTINGS.theme=_t;}catch(e){}
 // Migrate old title stored in localStorage
 if(SETTINGS.title==='Zain Abbasi'){SETTINGS.title='Zain A.';saveSettings();}
 
-function saveSettings(){localStorage.setItem('za_settings_v1',JSON.stringify(SETTINGS));}
+function saveSettings(){try{localStorage.setItem('za_settings_v2',JSON.stringify(SETTINGS));}catch(e){}}
 
 function setSetting(key,val){SETTINGS[key]=val;saveSettings();try{if(localStorage.getItem('za_hint_seen')==='1'){var _h=document.getElementById('order-hint');if(_h)_h.classList.add('hidden');}}catch(e){}
 applySettings();markUnsaved();}
@@ -5866,7 +6039,7 @@ function populateSettingsInputs(){
 }
 
 //##PRODUCTS_BEGIN##
-const PRODUCTS = [{"id":126,"cat":"niche","brand":"Amouage","name":"Purpose 50","p5":40,"p10":75,"badge":"HOT","sold":false},{"id":4,"cat":"niche","brand":"Amouage","name":"Outlands","p5":38,"p10":70,"badge":"HOT","sold":false},{"id":1,"cat":"niche","brand":"Amouage","name":"Decision","p5":30,"p10":55,"badge":"HOT","sold":false},{"id":134,"cat":"niche","brand":"Amouage","name":"Enclave","p5":33,"p10":60,"badge":null,"sold":false,"note":"2021 Batch"},{"id":3,"cat":"niche","brand":"Amouage","name":"Lustre","p5":30,"p10":55,"badge":"HOT","sold":false},{"id":2,"cat":"niche","brand":"Amouage","name":"Epic Man","p5":30,"p10":55,"badge":null,"sold":false,"note":"2024 Batch"},{"id":127,"cat":"niche","brand":"Amouage","name":"Timber","p5":30,"p10":55,"badge":null,"sold":false,"note":"OPUS XVI Collection"},{"id":6,"cat":"niche","brand":"Amouage","name":"Reflection","p5":30,"p10":55,"badge":"HOT","sold":false,"note":"2022 Batch"},{"id":8,"cat":"niche","brand":"Byredo","name":"Rouge Chaotique","p5":35,"p10":null,"badge":"LIMITED","sold":false,"note":"5ml only"},{"id":9,"cat":"niche","brand":"Creed","name":"Green Irish Tweed","p5":30,"p10":null,"badge":"HOT","sold":false,"note":"2019 Batch"},{"id":150,"cat":"niche","brand":"Essential Parfums","name":"Bois Impérial Extrait","p5":38,"p10":70,"badge":"NEW","sold":false},{"id":10,"cat":"niche","brand":"Essential Parfums","name":"Bois Impérial","p5":15,"p10":28,"badge":"HOT","sold":false},{"id":124,"cat":"niche","brand":"Initio","name":"Atomic Rose","p5":20,"p10":null,"badge":null,"sold":false,"note":"5ml only"},{"id":11,"cat":"niche","brand":"Initio","name":"Musk Therapy","p5":25,"p10":45,"badge":"NEW","sold":false},{"id":12,"cat":"niche","brand":"Kilian","name":"Angels' Share","p5":30,"p10":null,"badge":"LIMITED","sold":false},{"id":14,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Rain Tea","p5":43,"p10":80,"badge":null,"sold":false},{"id":148,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Ombre Nomade","p5":43,"p10":80,"badge":"NEW","sold":false},{"id":145,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Imagination","p5":38,"p10":70,"badge":"NEW","sold":false},{"id":13,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Meteore","p5":38,"p10":70,"badge":null,"sold":false},{"id":16,"cat":"niche","brand":"Maison Crivelli","name":"Hibiscus Mahajad","p5":40,"p10":75,"badge":"NEW","sold":false},{"id":142,"cat":"niche","brand":"Maison Crivelli","name":"Musc Nurasana","p5":40,"p10":75,"badge":"NEW","sold":false,"note":"Newly Released!!"},{"id":17,"cat":"niche","brand":"Maison Crivelli","name":"Oud Maracujá","p5":38,"p10":70,"badge":null,"sold":false},{"id":15,"cat":"niche","brand":"Maison Crivelli","name":"Ambre Chromatique","p5":33,"p10":60,"badge":null,"sold":false},{"id":18,"cat":"niche","brand":"Maison Francis Kurkdjian","name":"Gentle Fluidity Silver","p5":28,"p10":50,"badge":"NEW","sold":false},{"id":19,"cat":"niche","brand":"Maison Francis Kurkdjian","name":"Grand Soir","p5":28,"p10":50,"badge":"HOT","sold":false},{"id":20,"cat":"niche","brand":"Maison Francis Kurkdjian","name":"Oud Satin Mood","p5":30,"p10":55,"badge":"HOT","sold":false},{"id":21,"cat":"niche","brand":"Maison Margiela Replica","name":"Jazz Club","p5":12,"p10":20,"badge":"HOT","sold":false},{"id":22,"cat":"niche","brand":"Maison Margiela Replica","name":"Soul of the Forest EDP","p5":12,"p10":20,"badge":null,"sold":false},{"id":24,"cat":"niche","brand":"Mancera","name":"Cedrat Boise EDP","p5":12,"p10":20,"badge":"HOT","sold":false},{"id":23,"cat":"niche","brand":"Mancera","name":"Aoud Lemon Mint","p5":12,"p10":20,"badge":null,"sold":false},{"id":25,"cat":"niche","brand":"Mancera","name":"Instant Crush","p5":12,"p10":20,"badge":null,"sold":false},{"id":26,"cat":"niche","brand":"Sospiro","name":"Vibrato","p5":23,"p10":40,"badge":"HOT","sold":false},{"id":27,"cat":"niche","brand":"To Summer","name":"First Apple","p5":40,"p10":75,"badge":"LIMITED","sold":false},{"id":28,"cat":"niche","brand":"To Summer","name":"Osmanthus EDP","p5":20,"p10":35,"badge":null,"sold":false},{"id":29,"cat":"niche","brand":"Xerjoff","name":"Naxos","p5":25,"p10":45,"badge":"HOT","sold":false},{"id":30,"cat":"designer","brand":"Azzaro","name":"Wanted Forever Elixir","p5":8,"p10":14,"badge":null,"sold":false},{"id":31,"cat":"designer","brand":"Chanel","name":"Bleu de Chanel L'Exclusif","p5":25,"p10":45,"badge":"HOT","sold":false},{"id":32,"cat":"designer","brand":"Davidoff","name":"Cool Water Intense EDP","p5":6,"p10":10,"badge":null,"sold":false},{"id":33,"cat":"designer","brand":"Dior","name":"Sauvage Elixir","p5":28,"p10":50,"badge":"HOT","sold":false},{"id":34,"cat":"designer","brand":"Dolce & Gabbana","name":"The One EDP","p5":8,"p10":14,"badge":null,"sold":false},{"id":163,"cat":"designer","brand":"Giorgio Armani","name":"I Will","p5":18,"p10":30,"badge":"NEW","sold":false},{"id":37,"cat":"designer","brand":"Giorgio Armani","name":"Stronger With You Absolutely","p5":10,"p10":18,"badge":null,"sold":false},{"id":38,"cat":"designer","brand":"Giorgio Armani","name":"Stronger With You Intensely","p5":10,"p10":18,"badge":null,"sold":false},{"id":35,"cat":"designer","brand":"Giorgio Armani","name":"Acqua di Giò Profondo EDP","p5":10,"p10":18,"badge":null,"sold":false},{"id":36,"cat":"designer","brand":"Giorgio Armani","name":"Acqua di Giò Profondo Parfum","p5":10,"p10":18,"badge":null,"sold":false},{"id":40,"cat":"designer","brand":"Hermès","name":"Terre d'Hermès Intense","p5":14,"p10":25,"badge":"NEW","sold":false},{"id":41,"cat":"designer","brand":"Hugo Boss","name":"Boss Bottled Absolu","p5":9,"p10":16,"badge":null,"sold":false},{"id":44,"cat":"designer","brand":"Hugo Boss","name":"Boss Bottled Elixir","p5":9,"p10":16,"badge":"HOT","sold":false},{"id":42,"cat":"designer","brand":"Hugo Boss","name":"Boss Bottled Beyond","p5":10,"p10":18,"badge":null,"sold":false},{"id":43,"cat":"designer","brand":"Hugo Boss","name":"Boss Bottled Bold Citrus","p5":6,"p10":11,"badge":null,"sold":false},{"id":45,"cat":"designer","brand":"Issey Miyake","name":"Le Sel D'Issey EDT","p5":9,"p10":16,"badge":null,"sold":false},{"id":48,"cat":"designer","brand":"Jean Paul Gaultier","name":"Le Male Le Parfum","p5":16,"p10":28,"badge":null,"sold":false},{"id":47,"cat":"designer","brand":"Jean Paul Gaultier","name":"Le Male Elixir","p5":14,"p10":24,"badge":"HOT","sold":false},{"id":46,"cat":"designer","brand":"Jean Paul Gaultier","name":"Le Beau Le Parfum","p5":14,"p10":24,"badge":"HOT","sold":false},{"id":49,"cat":"designer","brand":"Paco Rabanne","name":"Invictus Victory ABSOLU","p5":14,"p10":25,"badge":"NEW","sold":false},{"id":50,"cat":"designer","brand":"Paco Rabanne","name":"Invictus Victory ELIXIR","p5":12,"p10":20,"badge":null,"sold":false},{"id":51,"cat":"designer","brand":"Prada","name":"Paradigme EDP","p5":18,"p10":30,"badge":"HOT","sold":false},{"id":52,"cat":"designer","brand":"Ralph Lauren","name":"Polo 67 EDP","p5":9,"p10":16,"badge":"HOT","sold":false},{"id":53,"cat":"designer","brand":"Ralph Lauren","name":"Ralph's Club EDP","p5":7,"p10":12,"badge":null,"sold":false},{"id":56,"cat":"designer","brand":"Valentino","name":"Born in Roma Extradose","p5":18,"p10":30,"badge":"HOT","sold":false},{"id":54,"cat":"designer","brand":"Valentino","name":"Born in Roma Coral Fantasy","p5":14,"p10":25,"badge":"HOT","sold":false},{"id":55,"cat":"designer","brand":"Valentino","name":"Born in Roma Donna Green Stravaganza","p5":8,"p10":14,"badge":null,"sold":false},{"id":57,"cat":"designer","brand":"Versace","name":"Eros Flame","p5":10,"p10":18,"badge":null,"sold":false},{"id":58,"cat":"designer","brand":"Yves Saint Laurent","name":"Babycat Raw Bourbon","p5":28,"p10":50,"badge":"HOT","sold":false},{"id":64,"cat":"designer","brand":"Yves Saint Laurent","name":"YSL Y EDP","p5":14,"p10":25,"badge":null,"sold":false},{"id":151,"cat":"designer","brand":"Yves Saint Laurent","name":"YSL Y Iced Cologne","p5":14,"p10":25,"badge":"NEW","sold":false},{"id":62,"cat":"designer","brand":"Yves Saint Laurent","name":"MYSLF EDP","p5":14,"p10":25,"badge":null,"sold":false},{"id":61,"cat":"designer","brand":"Yves Saint Laurent","name":"MYSLF ABSOLU","p5":20,"p10":35,"badge":null,"sold":false},{"id":59,"cat":"designer","brand":"Yves Saint Laurent","name":"Libre EDT","p5":10,"p10":18,"badge":null,"sold":false},{"id":60,"cat":"designer","brand":"Yves Saint Laurent","name":"Libre Le Parfum","p5":14,"p10":25,"badge":null,"sold":false},{"id":63,"cat":"designer","brand":"Yves Saint Laurent","name":"The Yulong","p5":16,"p10":28,"badge":"HOT","sold":false},{"id":65,"cat":"middle","brand":"Afnan","name":"9PM Elixir","p5":6,"p10":11,"badge":null,"sold":false,"note":"DNA: JPG Le Male Absolu"},{"id":66,"cat":"middle","brand":"Afnan","name":"Rare Reef","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"DNA: LV Pacific Chill"},{"id":67,"cat":"middle","brand":"Afnan","name":"Supremacy Collector's Edition","p5":9,"p10":16,"badge":null,"sold":false,"note":"DNA: Creed Absolu Aventus"},{"id":68,"cat":"middle","brand":"Afnan","name":"Supremacy Not Only Intense","p5":9,"p10":16,"badge":null,"sold":false,"note":"DNA: Creed Aventus"},{"id":70,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Ignite Oud","p5":12,"p10":20,"badge":"HOT","sold":false},{"id":73,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Oud & Roses","p5":12,"p10":20,"badge":"HOT","sold":false},{"id":74,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Summer Oud","p5":12,"p10":20,"badge":null,"sold":false},{"id":71,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Kaaf","p5":6,"p10":10,"badge":null,"sold":false,"note":"DNA: PDM Percival"},{"id":75,"cat":"middle","brand":"Al Haramain","name":"Aqua Dubai","p5":10,"p10":18,"badge":null,"sold":false,"note":"DNA: LV Imagination"},{"id":76,"cat":"middle","brand":"Al Haramain","name":"Carbon Edition","p5":10,"p10":18,"badge":null,"sold":false,"saleP5":8,"saleP10":14,"note":"DNA: Creed Irish Tweed"},{"id":78,"cat":"middle","brand":"Armaf","name":"Club de Nuit Extrait","p5":10,"p10":18,"badge":"HOT","sold":false,"note":"DNA: Creed Aventus"},{"id":82,"cat":"middle","brand":"French Avenue","name":"Vulcan Feu","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"God of Fire"},{"id":83,"cat":"middle","brand":"French Avenue","name":"Vulcan Sable","p5":6,"p10":11,"badge":null,"sold":false,"note":"Sand Dance"},{"id":80,"cat":"middle","brand":"French Avenue","name":"Amber Empire","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"Blonde Amber"},{"id":81,"cat":"middle","brand":"French Avenue","name":"Liquid Brun Limited Edition","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"DNA: PDM Althair"},{"id":84,"cat":"middle","brand":"Khadlaj","name":"Island Dreams","p5":6,"p10":11,"badge":"HOT","sold":false,"saleP10":10,"note":"DNA: LV Symphony"},{"id":85,"cat":"middle","brand":"Khadlaj","name":"Island Vanilla Dunes","p5":6,"p10":11,"badge":null,"sold":false,"note":"DNA: PDM Althaïr"},{"id":154,"cat":"middle","brand":"Khadlaj","name":"Karus Gold ABSOLU","p5":7,"p10":12,"badge":"NEW","sold":false,"note":"DNA: Bal d'Afrique Absolu"},{"id":86,"cat":"middle","brand":"Khadlaj","name":"Shiyaaka Snow","p5":6,"p10":11,"badge":null,"sold":false,"saleP10":10,"note":"DNA: LV Météore"},{"id":153,"cat":"middle","brand":"Khadlaj","name":"Shiyaaka Sky","p5":7,"p10":12,"badge":"NEW","sold":false,"note":"DNA: Herbes Troublantes by Guerlain"},{"id":146,"cat":"middle","brand":"Lattafa","name":"Musamam Black Intense","p5":6,"p10":11,"badge":"NEW","sold":false},{"id":87,"cat":"middle","brand":"Lattafa","name":"Ana Abiyedh","p5":7,"p10":12,"badge":null,"sold":false,"saleP5":5,"saleP10":9,"note":"Erba Pura DNA"},{"id":88,"cat":"middle","brand":"Maison Asrar","name":"Cal Thriller 3","p5":7,"p10":12,"badge":null,"sold":false,"note":"DNA: YSL 6"},{"id":139,"cat":"middle","brand":"Rasasi","name":"Hawas Sapphire","p5":7,"p10":12,"badge":"NEW","sold":false},{"id":91,"cat":"middle","brand":"Rasasi","name":"Hawas Kobra","p5":7,"p10":12,"badge":null,"sold":false,"note":"DNA: LV Imagination"},{"id":92,"cat":"middle","brand":"Rasasi","name":"Hawas Verde","p5":7,"p10":12,"badge":"NEW","sold":false,"note":"Torino 21"},{"id":140,"cat":"middle","brand":"Rasasi","name":"Hawas London","p5":6,"p10":11,"badge":"NEW","sold":false,"note":"DNA. Brompton Immortals"},{"id":90,"cat":"middle","brand":"Rasasi","name":"Hawas Fire","p5":7,"p10":12,"badge":null,"sold":false,"note":"DNA: Gissah Imperial Valley"},{"id":89,"cat":"middle","brand":"Rasasi","name":"Hawas Black","p5":7,"p10":12,"badge":"HOT","sold":false,"note":"DNA: Hacivat"},{"id":93,"cat":"middle","brand":"Rasasi","name":"Shuhrah","p5":7,"p10":12,"badge":null,"sold":false},{"id":94,"cat":"middle","brand":"Rayhaan","name":"Aquatica","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"DNA: Creed Virgin Island Water"},{"id":95,"cat":"middle","brand":"Rayhaan","name":"Terra","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"DNA: Outlands"},{"id":135,"cat":"middle","brand":"Bujairami","name":"Dead Serious","p5":6,"p10":11,"badge":"NEW","sold":false,"note":"Mojave Ghost"},{"id":136,"cat":"middle","brand":"Bujairami","name":"Vibration","p5":6,"p10":11,"badge":"NEW","sold":false,"note":"Sospiro Vibrato"},{"id":97,"cat":"middle","brand":"Bujairami","name":"Non Stop","p5":6,"p10":11,"badge":"NEW","sold":false,"note":"Pacific Chill inspired"},{"id":98,"cat":"middle","brand":"Bujairami","name":"Psycho Symphony","p5":6,"p10":null,"badge":"LIMITED","sold":false,"note":"LV Symphony inspired"},{"id":99,"cat":"middle","brand":"Bujairami","name":"Rizz Meteore","p5":7,"p10":11,"badge":null,"sold":false,"saleP5":5,"saleP10":9,"note":"LV Météore inspired"},{"id":100,"cat":"middle","brand":"Bujairami","name":"Rose in Gold","p5":6,"p10":11,"badge":null,"sold":false,"note":"Delina PDM inspired"},{"id":101,"cat":"middle","brand":"Bujairami","name":"Too Damn Good","p5":8,"p10":null,"badge":"LIMITED","sold":false,"note":"DNA: Bal d'Afrique Absolu"},{"id":155,"cat":"niche","brand":"Parfums De Marley","name":"Layton","p5":20,"p10":35,"badge":"NEW","sold":false},{"id":103,"cat":"niche","brand":"Parfums De Marley","name":"Carlisle","p5":23,"p10":null,"badge":"NEW","sold":false},{"id":104,"cat":"niche","brand":"Goldfield & Banks","name":"Tale of Amber","p5":20,"p10":null,"badge":"LIMITED","sold":false},{"id":106,"cat":"niche","brand":"Thomas Kosmala","name":"No.4","p5":10,"p10":null,"badge":"LIMITED","sold":false},{"id":110,"cat":"middle","brand":"Ahmed Al Maghribi","name":"O Clock","p5":6,"p10":null,"badge":null,"sold":false,"saleP5":5},{"id":111,"cat":"middle","brand":"Afnan","name":"Supremacy Oud","p5":8,"p10":null,"badge":null,"sold":false,"saleP5":7,"note":"DNA: Oud for Greatness"},{"id":112,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Azzure Royal","p5":7,"p10":null,"badge":null,"sold":false,"saleP5":6,"note":"DNA: Blue Talisman"},{"id":114,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Bombay Oud","p5":10,"p10":null,"badge":null,"sold":false,"saleP5":8},{"id":116,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Aqua Oud","p5":6,"p10":null,"badge":null,"sold":false,"saleP5":5,"note":"ADG Profumo/profondo"},{"id":119,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Blue Oud","p5":6,"p10":null,"badge":null,"sold":false,"saleP5":5},{"id":120,"cat":"middle","brand":"Al Haramain","name":"Dubai Nights","p5":7,"p10":null,"badge":null,"sold":false,"note":"4.5ml left only"},{"id":121,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Bin Sheikh","p5":8,"p10":null,"badge":null,"sold":false,"saleP5":7,"note":"4ml left only"},{"id":125,"cat":"middle","brand":"JUNAID","name":"Sanaya","p5":6,"p10":11,"badge":"NEW","sold":false,"note":"DNA: LV Imagination"},{"id":128,"cat":"niche","brand":"Xerjoff","name":"Torino 21","p5":23,"p10":40,"badge":"NEW","sold":false},{"id":133,"cat":"niche","brand":"Amouage","name":"Meander","p5":30,"p10":55,"badge":null,"sold":false,"note":"2021 Batch"},{"id":137,"cat":"niche","brand":"Ex Nihilo","name":"Blue Talisman Extrait","p5":38,"p10":70,"badge":"NEW","sold":false},{"id":138,"cat":"niche","brand":"Sospiro","name":"Basso","p5":20,"p10":35,"badge":"NEW","sold":false},{"id":141,"cat":"niche","brand":"Marc-Antoine Barrois","name":"Ganymede","p5":23,"p10":40,"badge":"NEW","sold":false},{"id":152,"cat":"niche","brand":"Matiere Premiere","name":"Radical Rose Extrait","p5":30,"p10":55,"badge":"NEW","sold":false},{"id":143,"cat":"niche","brand":"Matiere Premiere","name":"Falcon Leather Extrait","p5":30,"p10":55,"badge":"NEW","sold":false},{"id":144,"cat":"middle","brand":"Swiss Arabian","name":"Enigma of Taif","p5":12,"p10":20,"badge":"NEW","sold":false},{"id":147,"cat":"niche","brand":"Nishane","name":"Wulong Cha Extrait","p5":23,"p10":40,"badge":"NEW","sold":false},{"id":149,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Afternoon Swim","p5":35,"p10":65,"badge":"NEW","sold":false},{"id":160,"cat":"middle","brand":"Arabiyat Prestige","name":"Marwa Extrait","p5":14,"p10":25,"badge":"NEW","sold":false,"note":"DNA: Imagination"},{"id":161,"cat":"designer","brand":"Paco Rabanne","name":"1 Million Lucky","p5":7,"p10":12,"badge":"NEW","sold":false},{"id":162,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Lovers","p5":30,"p10":55,"badge":"NEW","sold":false}];
+const PRODUCTS = [{"id":126,"cat":"niche","brand":"Amouage","name":"Purpose 50","p5":40,"p10":75,"badge":"HOT","sold":false},{"id":4,"cat":"niche","brand":"Amouage","name":"Outlands","p5":38,"p10":70,"badge":"HOT","sold":false},{"id":1,"cat":"niche","brand":"Amouage","name":"Decision","p5":30,"p10":55,"badge":"HOT","sold":false},{"id":134,"cat":"niche","brand":"Amouage","name":"Enclave","p5":33,"p10":60,"badge":null,"sold":false,"note":"2021 Batch"},{"id":3,"cat":"niche","brand":"Amouage","name":"Lustre","p5":30,"p10":55,"badge":"HOT","sold":false},{"id":2,"cat":"niche","brand":"Amouage","name":"Epic Man","p5":30,"p10":55,"badge":null,"sold":false,"note":"2024 Batch"},{"id":127,"cat":"niche","brand":"Amouage","name":"Timber","p5":30,"p10":55,"badge":null,"sold":false,"note":"OPUS XVI Collection"},{"id":6,"cat":"niche","brand":"Amouage","name":"Reflection","p5":30,"p10":55,"badge":"HOT","sold":false,"note":"2022 Batch"},{"id":8,"cat":"niche","brand":"Byredo","name":"Rouge Chaotique","p5":35,"p10":null,"badge":"LIMITED","sold":false,"note":"5ml only"},{"id":9,"cat":"niche","brand":"Creed","name":"Green Irish Tweed","p5":30,"p10":null,"badge":"HOT","sold":false,"note":"2019 Batch"},{"id":150,"cat":"niche","brand":"Essential Parfums","name":"Bois Impérial Extrait","p5":38,"p10":70,"badge":"NEW","sold":false},{"id":10,"cat":"niche","brand":"Essential Parfums","name":"Bois Impérial","p5":15,"p10":28,"badge":"HOT","sold":false},{"id":124,"cat":"niche","brand":"Initio","name":"Atomic Rose","p5":20,"p10":null,"badge":null,"sold":false,"note":"5ml only"},{"id":11,"cat":"niche","brand":"Initio","name":"Musk Therapy","p5":25,"p10":45,"badge":"NEW","sold":false},{"id":12,"cat":"niche","brand":"Kilian","name":"Angels' Share","p5":30,"p10":null,"badge":"LIMITED","sold":false},{"id":14,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Rain Tea","p5":43,"p10":80,"badge":null,"sold":false},{"id":148,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Ombre Nomade","p5":43,"p10":80,"badge":"NEW","sold":false},{"id":145,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Imagination","p5":38,"p10":70,"badge":"NEW","sold":false},{"id":13,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Meteore","p5":38,"p10":70,"badge":null,"sold":false},{"id":16,"cat":"niche","brand":"Maison Crivelli","name":"Hibiscus Mahajad","p5":40,"p10":75,"badge":"NEW","sold":false},{"id":142,"cat":"niche","brand":"Maison Crivelli","name":"Musc Nurasana","p5":40,"p10":75,"badge":"NEW","sold":false,"note":"Newly Released!!"},{"id":17,"cat":"niche","brand":"Maison Crivelli","name":"Oud Maracujá","p5":38,"p10":70,"badge":null,"sold":false},{"id":15,"cat":"niche","brand":"Maison Crivelli","name":"Ambre Chromatique","p5":33,"p10":60,"badge":null,"sold":false},{"id":18,"cat":"niche","brand":"Maison Francis Kurkdjian","name":"Gentle Fluidity Silver","p5":28,"p10":50,"badge":"NEW","sold":false},{"id":19,"cat":"niche","brand":"Maison Francis Kurkdjian","name":"Grand Soir","p5":28,"p10":50,"badge":"HOT","sold":false},{"id":20,"cat":"niche","brand":"Maison Francis Kurkdjian","name":"Oud Satin Mood","p5":30,"p10":55,"badge":"HOT","sold":false},{"id":21,"cat":"niche","brand":"Maison Margiela Replica","name":"Jazz Club","p5":12,"p10":20,"badge":"HOT","sold":false},{"id":22,"cat":"niche","brand":"Maison Margiela Replica","name":"Soul of the Forest EDP","p5":12,"p10":20,"badge":null,"sold":false},{"id":24,"cat":"niche","brand":"Mancera","name":"Cedrat Boise EDP","p5":12,"p10":20,"badge":"HOT","sold":false},{"id":23,"cat":"niche","brand":"Mancera","name":"Aoud Lemon Mint","p5":12,"p10":20,"badge":null,"sold":false},{"id":25,"cat":"niche","brand":"Mancera","name":"Instant Crush","p5":12,"p10":20,"badge":null,"sold":false},{"id":26,"cat":"niche","brand":"Sospiro","name":"Vibrato","p5":23,"p10":40,"badge":"HOT","sold":false},{"id":27,"cat":"niche","brand":"To Summer","name":"First Apple","p5":40,"p10":75,"badge":"LIMITED","sold":false},{"id":28,"cat":"niche","brand":"To Summer","name":"Osmanthus EDP","p5":20,"p10":35,"badge":null,"sold":false},{"id":29,"cat":"niche","brand":"Xerjoff","name":"Naxos","p5":25,"p10":45,"badge":"HOT","sold":false},{"id":30,"cat":"designer","brand":"Azzaro","name":"Wanted Forever Elixir","p5":8,"p10":14,"badge":null,"sold":false},{"id":31,"cat":"designer","brand":"Chanel","name":"Bleu de Chanel L'Exclusif","p5":25,"p10":45,"badge":"HOT","sold":false},{"id":32,"cat":"designer","brand":"Davidoff","name":"Cool Water Intense EDP","p5":6,"p10":10,"badge":null,"sold":false},{"id":33,"cat":"designer","brand":"Dior","name":"Sauvage Elixir","p5":28,"p10":50,"badge":"HOT","sold":false},{"id":34,"cat":"designer","brand":"Dolce & Gabbana","name":"The One EDP","p5":8,"p10":14,"badge":null,"sold":false},{"id":163,"cat":"designer","brand":"Giorgio Armani","name":"I Will","p5":18,"p10":30,"badge":"NEW","sold":false},{"id":37,"cat":"designer","brand":"Giorgio Armani","name":"Stronger With You Absolutely","p5":10,"p10":18,"badge":null,"sold":false},{"id":38,"cat":"designer","brand":"Giorgio Armani","name":"Stronger With You Intensely","p5":10,"p10":18,"badge":null,"sold":false},{"id":35,"cat":"designer","brand":"Giorgio Armani","name":"Acqua di Giò Profondo EDP","p5":10,"p10":18,"badge":null,"sold":false},{"id":36,"cat":"designer","brand":"Giorgio Armani","name":"Acqua di Giò Profondo Parfum","p5":10,"p10":18,"badge":null,"sold":false},{"id":40,"cat":"designer","brand":"Hermès","name":"Terre d'Hermès Intense","p5":14,"p10":25,"badge":"NEW","sold":false},{"id":41,"cat":"designer","brand":"Hugo Boss","name":"Boss Bottled Absolu","p5":9,"p10":16,"badge":null,"sold":false},{"id":44,"cat":"designer","brand":"Hugo Boss","name":"Boss Bottled Elixir","p5":9,"p10":16,"badge":"HOT","sold":false},{"id":42,"cat":"designer","brand":"Hugo Boss","name":"Boss Bottled Beyond","p5":10,"p10":18,"badge":null,"sold":false},{"id":43,"cat":"designer","brand":"Hugo Boss","name":"Boss Bottled Bold Citrus","p5":6,"p10":11,"badge":null,"sold":false},{"id":45,"cat":"designer","brand":"Issey Miyake","name":"Le Sel D'Issey EDT","p5":9,"p10":16,"badge":null,"sold":false},{"id":48,"cat":"designer","brand":"Jean Paul Gaultier","name":"Le Male Le Parfum","p5":16,"p10":28,"badge":null,"sold":false},{"id":47,"cat":"designer","brand":"Jean Paul Gaultier","name":"Le Male Elixir","p5":14,"p10":24,"badge":"HOT","sold":false},{"id":46,"cat":"designer","brand":"Jean Paul Gaultier","name":"Le Beau Le Parfum","p5":14,"p10":24,"badge":"HOT","sold":false},{"id":49,"cat":"designer","brand":"Paco Rabanne","name":"Invictus Victory ABSOLU","p5":14,"p10":25,"badge":"NEW","sold":false},{"id":50,"cat":"designer","brand":"Paco Rabanne","name":"Invictus Victory ELIXIR","p5":12,"p10":20,"badge":null,"sold":false},{"id":51,"cat":"designer","brand":"Prada","name":"Paradigme EDP","p5":18,"p10":30,"badge":"HOT","sold":false},{"id":52,"cat":"designer","brand":"Ralph Lauren","name":"Polo 67 EDP","p5":9,"p10":16,"badge":"HOT","sold":false},{"id":53,"cat":"designer","brand":"Ralph Lauren","name":"Ralph's Club EDP","p5":7,"p10":12,"badge":null,"sold":false},{"id":56,"cat":"designer","brand":"Valentino","name":"Born in Roma Extradose","p5":18,"p10":30,"badge":"HOT","sold":false},{"id":54,"cat":"designer","brand":"Valentino","name":"Born in Roma Coral Fantasy","p5":14,"p10":25,"badge":"HOT","sold":false},{"id":55,"cat":"designer","brand":"Valentino","name":"Born in Roma Donna Green Stravaganza","p5":8,"p10":14,"badge":null,"sold":false},{"id":57,"cat":"designer","brand":"Versace","name":"Eros Flame","p5":10,"p10":18,"badge":null,"sold":false},{"id":58,"cat":"designer","brand":"Yves Saint Laurent","name":"Babycat Raw Bourbon","p5":28,"p10":50,"badge":"HOT","sold":false},{"id":64,"cat":"designer","brand":"Yves Saint Laurent","name":"YSL Y EDP","p5":14,"p10":25,"badge":null,"sold":false},{"id":151,"cat":"designer","brand":"Yves Saint Laurent","name":"YSL Y Iced Cologne","p5":14,"p10":25,"badge":"NEW","sold":false},{"id":62,"cat":"designer","brand":"Yves Saint Laurent","name":"MYSLF EDP","p5":14,"p10":25,"badge":null,"sold":false},{"id":61,"cat":"designer","brand":"Yves Saint Laurent","name":"MYSLF ABSOLU","p5":20,"p10":35,"badge":null,"sold":false},{"id":59,"cat":"designer","brand":"Yves Saint Laurent","name":"Libre EDT","p5":10,"p10":18,"badge":null,"sold":false},{"id":60,"cat":"designer","brand":"Yves Saint Laurent","name":"Libre Le Parfum","p5":14,"p10":25,"badge":null,"sold":false},{"id":63,"cat":"designer","brand":"Yves Saint Laurent","name":"The Yulong","p5":16,"p10":28,"badge":"HOT","sold":false},{"id":65,"cat":"middle","brand":"Afnan","name":"9PM Elixir","p5":6,"p10":11,"badge":null,"sold":false,"note":"DNA: JPG Le Male Absolu"},{"id":66,"cat":"middle","brand":"Afnan","name":"Rare Reef","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"DNA: LV Pacific Chill"},{"id":67,"cat":"middle","brand":"Afnan","name":"Supremacy Collector's Edition","p5":9,"p10":16,"badge":null,"sold":false,"note":"DNA: Creed Absolu Aventus"},{"id":68,"cat":"middle","brand":"Afnan","name":"Supremacy Not Only Intense","p5":9,"p10":16,"badge":null,"sold":false,"note":"DNA: Creed Aventus"},{"id":70,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Ignite Oud","p5":12,"p10":20,"badge":"HOT","sold":false},{"id":73,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Oud & Roses","p5":12,"p10":20,"badge":"HOT","sold":false},{"id":74,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Summer Oud","p5":12,"p10":20,"badge":null,"sold":false},{"id":71,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Kaaf","p5":6,"p10":10,"badge":null,"sold":false,"note":"DNA: PDM Percival"},{"id":75,"cat":"middle","brand":"Al Haramain","name":"Aqua Dubai","p5":10,"p10":18,"badge":null,"sold":false,"note":"DNA: LV Imagination"},{"id":76,"cat":"middle","brand":"Al Haramain","name":"Carbon Edition","p5":10,"p10":18,"badge":null,"sold":false,"saleP5":8,"saleP10":14,"note":"DNA: Creed Irish Tweed"},{"id":78,"cat":"middle","brand":"Armaf","name":"Club de Nuit Extrait","p5":10,"p10":18,"badge":"HOT","sold":false,"note":"DNA: Creed Aventus"},{"id":82,"cat":"middle","brand":"French Avenue","name":"Vulcan Feu","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"God of Fire"},{"id":83,"cat":"middle","brand":"French Avenue","name":"Vulcan Sable","p5":6,"p10":11,"badge":null,"sold":false,"note":"Sand Dance"},{"id":80,"cat":"middle","brand":"French Avenue","name":"Amber Empire","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"Blonde Amber"},{"id":81,"cat":"middle","brand":"French Avenue","name":"Liquid Brun Limited Edition","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"DNA: PDM Althair"},{"id":84,"cat":"middle","brand":"Khadlaj","name":"Island Dreams","p5":6,"p10":11,"badge":"HOT","sold":false,"saleP10":10,"note":"DNA: LV Symphony"},{"id":85,"cat":"middle","brand":"Khadlaj","name":"Island Vanilla Dunes","p5":6,"p10":11,"badge":null,"sold":false,"note":"DNA: PDM Althaïr"},{"id":154,"cat":"middle","brand":"Khadlaj","name":"Karus Gold ABSOLU","p5":7,"p10":12,"badge":"NEW","sold":false,"note":"DNA: Bal d'Afrique Absolu"},{"id":86,"cat":"middle","brand":"Khadlaj","name":"Shiyaaka Snow","p5":6,"p10":11,"badge":null,"sold":false,"saleP10":10,"note":"DNA: LV Météore"},{"id":153,"cat":"middle","brand":"Khadlaj","name":"Shiyaaka Sky","p5":7,"p10":12,"badge":"NEW","sold":false,"note":"DNA: Herbes Troublantes by Guerlain"},{"id":146,"cat":"middle","brand":"Lattafa","name":"Musamam Black Intense","p5":6,"p10":11,"badge":"NEW","sold":false},{"id":87,"cat":"middle","brand":"Lattafa","name":"Ana Abiyedh","p5":7,"p10":12,"badge":null,"sold":false,"saleP5":5,"saleP10":9,"note":"Erba Pura DNA"},{"id":88,"cat":"middle","brand":"Maison Asrar","name":"Cal Thriller 3","p5":7,"p10":12,"badge":null,"sold":false,"note":"DNA: YSL 6"},{"id":164,"cat":"middle","brand":"Rasasi Hawas","name":"Hawas Ice","p5":7,"p10":12,"badge":"NEW","sold":false},{"id":139,"cat":"middle","brand":"Rasasi Hawas","name":"Hawas Sapphire","p5":7,"p10":12,"badge":"NEW","sold":false},{"id":91,"cat":"middle","brand":"Rasasi Hawas","name":"Hawas Kobra","p5":7,"p10":12,"badge":null,"sold":false,"note":"DNA: LV Imagination"},{"id":92,"cat":"middle","brand":"Rasasi Hawas","name":"Hawas Verde","p5":7,"p10":12,"badge":"NEW","sold":false,"note":"Torino 21"},{"id":140,"cat":"middle","brand":"Rasasi Hawas","name":"Hawas London","p5":6,"p10":11,"badge":"NEW","sold":false,"note":"DNA. Brompton Immortals"},{"id":90,"cat":"middle","brand":"Rasasi Hawas","name":"Hawas Fire","p5":7,"p10":12,"badge":null,"sold":false,"note":"DNA: Gissah Imperial Valley"},{"id":89,"cat":"middle","brand":"Rasasi Hawas","name":"Hawas Black","p5":7,"p10":12,"badge":"HOT","sold":false,"note":"DNA: Hacivat"},{"id":93,"cat":"middle","brand":"Rasasi","name":"Shuhrah","p5":7,"p10":12,"badge":null,"sold":false},{"id":94,"cat":"middle","brand":"Rayhaan","name":"Aquatica","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"DNA: Creed Virgin Island Water"},{"id":95,"cat":"middle","brand":"Rayhaan","name":"Terra","p5":6,"p10":11,"badge":"HOT","sold":false,"note":"DNA: Outlands"},{"id":135,"cat":"middle","brand":"Bujairami","name":"Dead Serious","p5":6,"p10":11,"badge":"NEW","sold":false,"note":"Mojave Ghost"},{"id":136,"cat":"middle","brand":"Bujairami","name":"Vibration","p5":6,"p10":11,"badge":"NEW","sold":false,"note":"Sospiro Vibrato"},{"id":97,"cat":"middle","brand":"Bujairami","name":"Non Stop","p5":6,"p10":11,"badge":"NEW","sold":false,"note":"Pacific Chill inspired"},{"id":98,"cat":"middle","brand":"Bujairami","name":"Psycho Symphony","p5":6,"p10":null,"badge":"LIMITED","sold":false,"note":"LV Symphony inspired"},{"id":99,"cat":"middle","brand":"Bujairami","name":"Rizz Meteore","p5":7,"p10":11,"badge":null,"sold":false,"saleP5":5,"saleP10":9,"note":"LV Météore inspired"},{"id":100,"cat":"middle","brand":"Bujairami","name":"Rose in Gold","p5":6,"p10":11,"badge":null,"sold":false,"note":"Delina PDM inspired"},{"id":101,"cat":"middle","brand":"Bujairami","name":"Too Damn Good","p5":8,"p10":null,"badge":"LIMITED","sold":false,"note":"DNA: Bal d'Afrique Absolu"},{"id":155,"cat":"niche","brand":"Parfums De Marley","name":"Layton","p5":20,"p10":35,"badge":"NEW","sold":false},{"id":103,"cat":"niche","brand":"Parfums De Marley","name":"Carlisle","p5":23,"p10":null,"badge":"NEW","sold":false},{"id":104,"cat":"niche","brand":"Goldfield & Banks","name":"Tale of Amber","p5":20,"p10":null,"badge":"LIMITED","sold":false},{"id":106,"cat":"niche","brand":"Thomas Kosmala","name":"No.4","p5":10,"p10":null,"badge":"LIMITED","sold":false},{"id":110,"cat":"middle","brand":"Ahmed Al Maghribi","name":"O Clock","p5":6,"p10":null,"badge":null,"sold":false,"saleP5":5},{"id":111,"cat":"middle","brand":"Afnan","name":"Supremacy Oud","p5":8,"p10":null,"badge":null,"sold":false,"saleP5":7,"note":"DNA: Oud for Greatness"},{"id":112,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Azzure Royal","p5":7,"p10":null,"badge":null,"sold":false,"saleP5":6,"note":"DNA: Blue Talisman"},{"id":114,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Bombay Oud","p5":10,"p10":null,"badge":null,"sold":false,"saleP5":8},{"id":116,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Aqua Oud","p5":6,"p10":null,"badge":null,"sold":false,"saleP5":5,"note":"ADG Profumo/profondo"},{"id":119,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Blue Oud","p5":6,"p10":null,"badge":null,"sold":false,"saleP5":5},{"id":120,"cat":"middle","brand":"Al Haramain","name":"Dubai Nights","p5":7,"p10":null,"badge":null,"sold":false,"note":"4.5ml left only"},{"id":121,"cat":"middle","brand":"Ahmed Al Maghribi","name":"Bin Sheikh","p5":8,"p10":null,"badge":null,"sold":false,"saleP5":7,"note":"4ml left only"},{"id":125,"cat":"middle","brand":"JUNAID","name":"Sanaya","p5":6,"p10":11,"badge":"NEW","sold":false,"note":"DNA: LV Imagination"},{"id":128,"cat":"niche","brand":"Xerjoff","name":"Torino 21","p5":23,"p10":40,"badge":"NEW","sold":false},{"id":133,"cat":"niche","brand":"Amouage","name":"Meander","p5":30,"p10":55,"badge":null,"sold":false,"note":"2021 Batch"},{"id":137,"cat":"niche","brand":"Ex Nihilo","name":"Blue Talisman Extrait","p5":40,"p10":75,"badge":"NEW","sold":false},{"id":138,"cat":"niche","brand":"Sospiro","name":"Basso","p5":20,"p10":35,"badge":"NEW","sold":false},{"id":141,"cat":"niche","brand":"Marc-Antoine Barrois","name":"Ganymede","p5":23,"p10":40,"badge":"NEW","sold":false},{"id":152,"cat":"niche","brand":"Matiere Premiere","name":"Radical Rose Extrait","p5":30,"p10":55,"badge":"NEW","sold":false},{"id":143,"cat":"niche","brand":"Matiere Premiere","name":"Falcon Leather Extrait","p5":30,"p10":55,"badge":"NEW","sold":false},{"id":144,"cat":"middle","brand":"Swiss Arabian","name":"Enigma of Taif","p5":12,"p10":20,"badge":"NEW","sold":false},{"id":147,"cat":"niche","brand":"Nishane","name":"Wulong Cha Extrait","p5":23,"p10":40,"badge":"NEW","sold":false},{"id":149,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Afternoon Swim","p5":35,"p10":65,"badge":"NEW","sold":false},{"id":160,"cat":"middle","brand":"Arabiyat Prestige","name":"Marwa Extrait","p5":14,"p10":25,"badge":"NEW","sold":false,"note":"DNA: Imagination"},{"id":161,"cat":"designer","brand":"Paco Rabanne","name":"1 Million Lucky","p5":7,"p10":12,"badge":"NEW","sold":false},{"id":162,"cat":"niche","brand":"Louis Vuitton (LV)","name":"Lovers","p5":30,"p10":55,"badge":"NEW","sold":false},{"id":165,"cat":"middle","brand":"Riiffs","name":"Freeze","p5":6,"p10":11,"badge":"NEW","sold":false}];
 //##PRODUCTS_END##
 
 // Load saved edits from localStorage — merge baked-in sale prices so a stale
@@ -5973,7 +6146,31 @@ function toggleSize(productId,size,price){
   const ex=inCart(productId,size);
   if(ex) cart=cart.filter(c=>!(c.productId===productId&&c.size===size));
   else cart.push({productId,size,price,qty:1});
+  // Remember where the tapped button sat so we can keep it visible: on a phone
+  // the gold mini-cart bar slides up over the bottom of the screen and can
+  // cover the very button that was just tapped.
+  const btn=(typeof event!=='undefined'&&event&&event.currentTarget)?event.currentTarget:null;
+  const topBefore=btn?btn.getBoundingClientRect().top:null;
   saveCartSession();updateAll();
+  if(!ex){
+    const p=getProduct(productId);
+    if(p) showToast(`✓ Added — ${p.name} ${size} · $${price}`,1800);
+    keepRowVisible(topBefore);
+  }
+}
+// After a render the row is rebuilt, so scroll by the offset needed to lift the
+// tapped row clear of the mini bar rather than holding a stale element.
+function keepRowVisible(topBefore){
+  if(topBefore==null) return;
+  if(!window.matchMedia('(max-width:1080px)').matches) return;
+  const mini=document.getElementById('cart-mini');
+  // offsetHeight ignores the slide-in transform, so this is stable even while
+  // the capsule is still animating up. +28 covers its bottom inset and margin.
+  const guard=(mini?mini.offsetHeight:0)+28;
+  const limit=window.innerHeight-guard;
+  if(topBefore>limit-44){
+    window.scrollBy({top:(topBefore-(limit-44))+12,behavior:'smooth'});
+  }
 }
 function changeQty(productId,size,delta){
   const item=inCart(productId,size);
@@ -5991,6 +6188,33 @@ function setDelivery(key){
 }
 
 // ── RENDER CATALOG ────────────────────────────────────────────
+// ── #1/#2 FIXED PRICE SLOTS ───────────────────────────────────
+// Every row emits one slot per size column, empty where the size doesn't
+// exist, so 2ml/5ml/10ml line up down the page instead of shuffling left.
+// A category with no 2ml at all drops that column entirely (.no-2ml).
+function catHas2ml(prods){
+  return prods.some(p=>!p.sold&&getSizes(p).some(s=>s.sz==='2ml'));
+}
+function sizeHeadHtml(has2){
+  return `<div class="size-head"><span class="sh-name">Fragrance</span><span></span>${has2?'<span>2ml</span>':''}<span>5ml</span><span>10ml</span></div>`;
+}
+function szBtnHtml(p,s){
+  if(!s) return '<span class="sz-slot" aria-hidden="true">&mdash;</span>';
+  const sel=inCart(p.id,s.sz)?'selected':'';
+  const isSaleBtn=s.origPrice!=null;
+  const wasHtml=isSaleBtn?`<span class="sz-was">$${s.origPrice}</span>`:'';
+  return `<button class="sz-btn ${sel}${isSaleBtn?' on-sale':''}" onclick="toggleSize(${p.id},'${s.sz}',${s.price})"><span>${s.sz}</span><span class="sz-px">${wasHtml}$${s.price}</span></button>`;
+}
+function sizeSlotsHtml(p,has2){
+  if(p.sold) return '<span class="sz-soldout">Sold Out</span>';
+  const sizes=getSizes(p);
+  const two=sizes.find(s=>s.sz==='2ml')||null;
+  const rest=sizes.filter(s=>s!==two);   // [main (5ml or "4ml left"), 10ml?]
+  const main=rest[0]||null;
+  const ten=rest[1]||null;
+  return (has2?szBtnHtml(p,two):'')+szBtnHtml(p,main)+szBtnHtml(p,ten);
+}
+
 function renderCatalog(){
   const q=normText(document.getElementById('search').value.trim());
   const catalog=document.getElementById('catalog');
@@ -6010,17 +6234,19 @@ function renderCatalog(){
       if(!catItems.length) return;
       any=true;
       const sec=document.createElement('div');
-      sec.className='cat-section';
+      const has2=catHas2ml(catItems);
+      sec.className='cat-section'+(has2?'':' no-2ml');
       const brands=[...new Set(catItems.map(p=>p.brand))].sort();
       sec.innerHTML=`
         <div class="cat-head">
           <span class="cat-title">${catDef.label}</span>
           <span class="cat-count">${catItems.length} new</span>
         </div>
+        ${sizeHeadHtml(has2)}
         ${brands.map(br=>`
           <div class="brand-group">
             <div class="brand-label">${br}</div>
-            ${catItems.filter(p=>p.brand===br).map(renderItem).join('')}
+            ${catItems.filter(p=>p.brand===br).map(p=>renderItem(p,has2)).join('')}
           </div>`).join('')}`;
       catalog.appendChild(sec);
     });
@@ -6052,17 +6278,19 @@ function renderCatalog(){
       if(!catItems.length) return;
       any=true;
       const sec=document.createElement('div');
-      sec.className='cat-section';
+      const has2=catHas2ml(catItems);
+      sec.className='cat-section'+(has2?'':' no-2ml');
       const brands=[...new Set(catItems.map(p=>p.brand))].sort();
       sec.innerHTML=`
         <div class="cat-head">
           <span class="cat-title">${catDef.label}</span>
           <span class="cat-count">${catItems.length} on sale</span>
         </div>
+        ${sizeHeadHtml(has2)}
         ${brands.map(br=>`
           <div class="brand-group">
             <div class="brand-label">${br}</div>
-            ${catItems.filter(p=>p.brand===br).map(renderItem).join('')}
+            ${catItems.filter(p=>p.brand===br).map(p=>renderItem(p,has2)).join('')}
           </div>`).join('')}`;
       catalog.appendChild(sec);
     });
@@ -6081,15 +6309,18 @@ function renderCatalog(){
     any=true;
     prods=sortProducts(prods);
     const sec=document.createElement('div');
-    sec.className='cat-section';
+    const has2=catHas2ml(prods);
+    sec.className='cat-section'+(has2?'':' no-2ml');
     const avail=prods.filter(p=>!p.sold).length;
     if(isFlat){
       sec.innerHTML=`
         <div class="cat-head">
           <span class="cat-title">${catDef.label}</span>
+          ${catDef.note?`<span class="cat-note">✦ ${catDef.note}</span>`:''}
           <span class="cat-count">${avail} available</span>
         </div>
-        ${prods.map(p=>renderItemFlat(p)).join('')}`;
+        ${sizeHeadHtml(has2)}
+        ${prods.map(p=>renderItemFlat(p,has2)).join('')}`;
     } else {
       const brands=[...new Set(prods.map(p=>p.brand))].sort();
       sec.innerHTML=`
@@ -6098,10 +6329,11 @@ function renderCatalog(){
           ${catDef.note?`<span class="cat-note">✦ ${catDef.note}</span>`:''}
           <span class="cat-count">${avail} available</span>
         </div>
+        ${sizeHeadHtml(has2)}
         ${brands.map(br=>`
           <div class="brand-group">
             <div class="brand-label">${br}</div>
-            ${prods.filter(p=>p.brand===br).map(renderItem).join('')}
+            ${prods.filter(p=>p.brand===br).map(p=>renderItem(p,has2)).join('')}
           </div>`).join('')}`;
     }
     catalog.appendChild(sec);
@@ -6109,8 +6341,7 @@ function renderCatalog(){
   if(!any) catalog.innerHTML=`<div class="no-results">No fragrances found for "<em>${q}</em>"</div>`;
 }
 
-function renderItem(p){
-  const sizes=getSizes(p);
+function renderItem(p,has2){
   const onSale=!p.sold&&((p.saleP5>0)||(p.saleP10>0));
   const soldBadge=p.sold?'<span class="badge badge-sold">Sold out</span>':'';
   const saleBadge=onSale?'<span class="badge badge-sale">Sale</span>':'';
@@ -6119,27 +6350,21 @@ function renderItem(p){
   const isAlmostGone=!p.sold&&p.note&&/^\d+\.?\d*ml\s+(left|only)/i.test(p.note);
   const lowBadge=isAlmostGone?'<span class="badge badge-low">Low stock</span>':'';
   const topBadge=soldBadge||saleBadge||lowBadge||otherBadge;
-  const badges=topBadge?`<div class="item-badges">${topBadge}</div>`:'';
+  // The badge cell is always emitted, empty or not — an omitted cell would
+  // shift every price column on that row out of alignment.
+  const badges=`<div class="item-badges">${topBadge}</div>`;
   const showNote=p.note&&p.note!=='5ml only'&&!/^5ml\s+only$/i.test(p.note);
-  const sizesHtml=p.sold?'<span class="sz-soldout">Sold Out</span>':
-    sizes.map(({sz,price,origPrice})=>{
-      const sel=inCart(p.id,sz)?'selected':'';
-      const isSaleBtn=origPrice!=null;
-      const wasHtml=isSaleBtn?`<span class="sz-was">$${origPrice}</span>`:'';
-      return `<button class="sz-btn ${sel}${isSaleBtn?' on-sale':''}" onclick="toggleSize(${p.id},'${sz}',${price})"><span>${sz}</span>${wasHtml}$${price}</button>`;
-    }).join('');
   return `<div class="item-row">
     <div class="item-info">
       <div class="item-name">${p.name}</div>
       ${showNote?`<div class="item-subtext">${p.note}</div>`:''}
     </div>
     ${badges}
-    <div class="sizes">${sizesHtml}</div>
+    <div class="sizes">${sizeSlotsHtml(p,has2)}</div>
   </div>`;
 }
 
-function renderItemFlat(p){
-  const sizes=getSizes(p);
+function renderItemFlat(p,has2){
   const onSale=!p.sold&&((p.saleP5>0)||(p.saleP10>0));
   const soldBadge=p.sold?'<span class="badge badge-sold">Sold out</span>':'';
   const saleBadge=onSale?'<span class="badge badge-sale">Sale</span>':'';
@@ -6148,15 +6373,8 @@ function renderItemFlat(p){
   const isAlmostGone=!p.sold&&p.note&&/^\d+\.?\d*ml\s+(left|only)/i.test(p.note);
   const lowBadge=isAlmostGone?'<span class="badge badge-low">Low stock</span>':'';
   const topBadge=soldBadge||saleBadge||lowBadge||otherBadge;
-  const badges=topBadge?`<div class="item-badges">${topBadge}</div>`:'';
+  const badges=`<div class="item-badges">${topBadge}</div>`;
   const showNote=p.note&&p.note!=='5ml only'&&!/^5ml\s+only$/i.test(p.note);
-  const sizesHtml=p.sold?'<span class="sz-soldout">Sold Out</span>':
-    sizes.map(({sz,price,origPrice})=>{
-      const sel=inCart(p.id,sz)?'selected':'';
-      const isSaleBtn=origPrice!=null;
-      const wasHtml=isSaleBtn?`<span class="sz-was">$${origPrice}</span>`:'';
-      return `<button class="sz-btn ${sel}${isSaleBtn?' on-sale':''}" onclick="toggleSize(${p.id},'${sz}',${price})"><span>${sz}</span>${wasHtml}$${price}</button>`;
-    }).join('');
   return `<div class="item-row">
     <div class="item-info">
       <div class="item-brand-tag">${p.brand}</div>
@@ -6164,7 +6382,7 @@ function renderItemFlat(p){
       ${showNote?`<div class="item-subtext">${p.note}</div>`:''}
     </div>
     ${badges}
-    <div class="sizes">${sizesHtml}</div>
+    <div class="sizes">${sizeSlotsHtml(p,has2)}</div>
   </div>`;
 }
 
@@ -6249,10 +6467,19 @@ function updateBadge(){
     const sub=getSubtotal();
     const mc=document.getElementById('cart-mini-count');
     const mt=document.getElementById('cart-mini-total');
-    if(mc) mc.textContent=n+' item'+(n!==1?'s':'');
+    if(mc){
+      // The capsule carries the minimum-order status so nobody has to work out
+      // whether they've qualified yet.
+      const min=SETTINGS.minimum||0;
+      const gap=min-sub;
+      const status=(min<=0||gap<=0)?'min met':`$${gap} to minimum`;
+      mc.textContent=n+' item'+(n!==1?'s':'')+' · '+status;
+    }
     if(mt) mt.textContent='$'+sub;
     const cartOpen=document.getElementById('cart-panel').classList.contains('open');
-    mini.classList.toggle('show', n>0 && !cartOpen);
+    const showMini=n>0 && !cartOpen;
+    mini.classList.toggle('show', showMini);
+    document.body.classList.toggle('mini-on', showMini);
   }
 }
 
@@ -6281,7 +6508,12 @@ function toggleCart(){
   panel.classList.toggle('open',!open);overlay.classList.toggle('show',!open);
   document.body.style.overflow=(!open&&window.innerWidth<1081)?'hidden':'';
   const mini=document.getElementById('cart-mini');
-  if(mini){const n=cart.reduce((s,c)=>s+c.qty,0);mini.classList.toggle('show', n>0 && open);}
+  if(mini){
+    const n=cart.reduce((s,c)=>s+c.qty,0);
+    const showMini=n>0 && open;   // `open` is the state before the toggle above
+    mini.classList.toggle('show', showMini);
+    document.body.classList.toggle('mini-on', showMini);
+  }
 }
 
 // Sizes are grouped, front-loaded in brackets, and totalled at the bottom.
@@ -6706,7 +6938,7 @@ function downloadHTML(){
   a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
   a.download='index.html';a.click();
   localStorage.removeItem('za_products_v2'); // clear cache — data is now baked in
-  localStorage.removeItem('za_settings_v1'); // clear settings cache — baked-in settings take effect immediately
+  localStorage.removeItem('za_settings_v1');localStorage.removeItem('za_settings_v2'); // clear settings cache — baked-in settings take effect immediately
   showToast('✓ Downloaded! Upload to Netlify to publish.',3500);
 }
 
@@ -6719,13 +6951,16 @@ function generatePDF(){
     return m?`<span style="opacity:.55;font-weight:400">&nbsp;(${m[1]}ml)</span>`:'';
   }
   function slot5(p){
-    if(p.sold) return '';
+    if(p.sold) return '<span style="opacity:.30;font-weight:400">&mdash;</span>';
     const sale5=p.saleP5&&p.saleP5>0?p.saleP5:null;
     const was=sale5?`<span style="text-decoration:line-through;color:#999999;font-size:5.6pt;font-weight:400;margin-right:1pt">$${p.p5}</span>`:'';
     return `${was}<span style="font-weight:700;${sale5?'color:#b03030;':''}">$${sale5||p.p5}</span>`;
   }
   function slot10(p){
-    if(p.sold) return '<span style="color:#aaa;font-style:italic">Sold Out</span>';
+    // #10 — "Sold Out" is wider than the 11mm slot at 6.5pt and bled left over
+    // the product name. The row is already dimmed to .38 and the name struck
+    // through, so an em-dash carries the same meaning inside the column.
+    if(p.sold) return '<span style="opacity:.30;font-weight:400">&mdash;</span>';
     const sale10=p.saleP10&&p.saleP10>0?p.saleP10:null;
     const act10=sale10||(p.p10||null);
     if(!act10) return '<span style="opacity:.30;font-weight:400">&mdash;</span>';
@@ -6770,7 +7005,7 @@ function generatePDF(){
         <div style="margin-bottom:2mm;break-inside:avoid-column">
           <div style="font-size:8pt;font-weight:700;color:#c8a060;margin-bottom:.6mm;font-family:'Cormorant Garamond',Georgia,serif;page-break-after:avoid;border-bottom:0.4pt solid rgba(201,168,114,.25);padding-bottom:.5mm">${br}</div>
           ${items.map(p=>`<div style="display:grid;grid-template-columns:1fr 11mm 11mm;align-items:baseline;padding:.5mm 0;font-size:6.5pt;border-bottom:.3pt dotted rgba(201,168,114,.3);${p.sold?'opacity:.38':''}">
-            <span style="min-width:0;overflow:hidden;color:#e8e8e8;font-family:'Hanken Grotesk',sans-serif;white-space:nowrap;text-overflow:ellipsis;padding-right:2mm">${p.name}${mlQual(p)}${badgeStr(p)}</span>
+            <span style="min-width:0;overflow:hidden;color:#e8e8e8;font-family:'Hanken Grotesk',sans-serif;white-space:nowrap;text-overflow:ellipsis;padding-right:2mm;${p.sold?'text-decoration:line-through;':''}">${p.name}${mlQual(p)}${badgeStr(p)}</span>
             <span style="text-align:right;white-space:nowrap;font-family:'Hanken Grotesk',sans-serif;color:#c8a060">${slot5(p)}</span>
             <span style="text-align:right;white-space:nowrap;font-family:'Hanken Grotesk',sans-serif;color:#c8a060">${slot10(p)}</span>
           </div>`).join('')}
@@ -7312,8 +7547,12 @@ function drawCategoryCanvas(catDef,prods){
 window.addEventListener('scroll',()=>{
   const atTop=window.scrollY<400;
   const atBottom=window.scrollY+window.innerHeight>=document.documentElement.scrollHeight-120;
-  document.getElementById('scroll-top').classList.toggle('show',!atTop);
-  document.getElementById('scroll-bottom').classList.toggle('show',!atBottom&&window.scrollY>100);
+  // #scroll-bottom has CSS but no element in the markup, so the unguarded
+  // lookup threw a TypeError on every single scroll event.
+  const st=document.getElementById('scroll-top');
+  if(st) st.classList.toggle('show',!atTop);
+  const sb=document.getElementById('scroll-bottom');
+  if(sb) sb.classList.toggle('show',!atBottom&&window.scrollY>100);
 },{passive:true});
 
 // ── UNSAVED CHANGES ───────────────────────────────────────────
@@ -7335,20 +7574,29 @@ window.addEventListener('beforeunload',e=>{
 });
 
 // ── VIEW DENSITY TOGGLE ───────────────────────────────────────
+// This pointed at #view-toggle, which was replaced by the Options menu button
+// some time ago. The lookup returned null, so the function threw: the density
+// flipped but the menu never closed and the choice was never saved.
 function toggleViewDensity(){
   const isCompact=document.body.classList.toggle('compact');
-  const btn=document.getElementById('view-toggle');
-  btn.classList.toggle('compact-on',isCompact);
-  btn.querySelector('svg').nextSibling.textContent=' '+(isCompact?'Compact':'Comfortable');
-  localStorage.setItem('za_view_density',isCompact?'compact':'comfortable');
+  const btn=document.getElementById('opts-compact-btn');
+  if(btn) btn.classList.toggle('compact-on',isCompact);
+  const lbl=document.getElementById('opts-compact-label');
+  if(lbl) lbl.textContent=isCompact?'Compact view':'Comfortable view';
+  try{localStorage.setItem('za_view_density',isCompact?'compact':'comfortable');}catch(e){}
+  if(typeof setStackVars==='function') setStackVars();
 }
 // Restore preference on load
 (function(){
-  if(localStorage.getItem('za_view_density')==='compact'){
-    document.body.classList.add('compact');
-    const btn=document.getElementById('view-toggle');
-    if(btn){btn.classList.add('compact-on');btn.querySelector('svg').nextSibling.textContent=' Compact';}
-  }
+  let v=null; try{v=localStorage.getItem('za_view_density');}catch(e){}
+  // The exported markup hard-codes class="compact", so an explicit
+  // "comfortable" choice has to actively remove it, not just skip adding it.
+  if(v) document.body.classList.toggle('compact', v==='compact');
+  const isCompact=document.body.classList.contains('compact');
+  const btn=document.getElementById('opts-compact-btn');
+  if(btn) btn.classList.toggle('compact-on',isCompact);
+  const lbl=document.getElementById('opts-compact-label');
+  if(lbl) lbl.textContent=isCompact?'Compact view':'Comfortable view';
 })();
 
 // ── CATEGORY NOTES EDITOR ─────────────────────────────────────
@@ -7758,7 +8006,11 @@ function toggleThemeMenu(){
   m.classList.toggle('open');
 }
 function custSetTheme(key){
-  setSetting('theme',key);
+  // Deliberately NOT setSetting() — that saved the whole SETTINGS object to
+  // localStorage, which is what froze prices and settings for any visitor who
+  // touched the palette button. The theme lives in its own key instead.
+  SETTINGS.theme=key;
+  applyTheme(key);
   // Mark active
   document.querySelectorAll('#cust-theme-menu .ctm-item').forEach(b=>{
     b.classList.toggle('active',b.dataset.ctheme===key);
@@ -7766,7 +8018,7 @@ function custSetTheme(key){
   // Sync editor theme cards too
   document.querySelectorAll('.theme-card[data-theme]').forEach(c=>c.classList.toggle('on',c.dataset.theme===key));
   document.getElementById('cust-theme-menu').classList.remove('open');
-  localStorage.setItem(CUST_THEME_KEY,key);
+  try{localStorage.setItem(CUST_THEME_KEY,key);}catch(e){}
   showToast('Theme: '+key.charAt(0).toUpperCase()+key.slice(1));
 }
 function updateCustThemeActive(){
@@ -7844,9 +8096,35 @@ document.addEventListener('click',function(e){
   }
 });
 
+// ── #4/#6 STICKY STACK MEASUREMENT ───────────────────────────────
+// The header and filter bar both change height (info strip wraps, tabs wrap,
+// category names differ). Measuring them beats hard-coded offsets: the filter
+// bar, the sticky brand labels and the cart panel all hang off these two vars.
+// Below 768px the header is released and only the filter bar pins, so
+// --header-h is 0 there.
+function setStackVars(){
+  const hdr=document.getElementById('header');
+  const fb=document.querySelector('.filter-bar');
+  const mobile=window.matchMedia('(max-width:768px)').matches;
+  const hh=(!mobile&&hdr)?Math.round(hdr.getBoundingClientRect().height):0;
+  const fh=fb?Math.round(fb.getBoundingClientRect().height):0;
+  const root=document.documentElement;
+  root.style.setProperty('--header-h',hh+'px');
+  root.style.setProperty('--stack-h',(hh+fh)+'px');
+}
+window.addEventListener('resize',setStackVars);
+window.addEventListener('orientationchange',()=>setTimeout(setStackVars,120));
+if(window.ResizeObserver){
+  const ro=new ResizeObserver(()=>setStackVars());
+  const h=document.getElementById('header'); if(h) ro.observe(h);
+  const f=document.querySelector('.filter-bar'); if(f) ro.observe(f);
+}
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(setStackVars).catch(()=>{});
+
 applySettings();
 updateAll();
 renderTabs();
+setStackVars();
 // Restore delivery option from session if cart was restored
 if(selDlv!=='pickup') setDelivery(selDlv);
 updateCustThemeActive();
