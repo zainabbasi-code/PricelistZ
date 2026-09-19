@@ -473,34 +473,38 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
   .cat-section{margin-bottom:32px}
   .cat-head{padding:14px 0 0;margin-bottom:16px}
   .brand-group{padding-top:12px;margin-bottom:24px}
-  .brand-label{font-size:11px}
+  /* A heading should outrank what sits under it. At 11px the brand was
+     smaller than the 14px product names it governs. */
+  .brand-label{font-size:15px}
 
   /* Item rows — name on top, sizes below.
-     #2 — the sizes are an even 3-column grid rather than wrapped flex. With
-     flex each button was only as wide as its text ("2ml · $15" vs "10ml · $55"),
-     so nothing lined up row to row — the desktop problem, still here. Equal
-     columns fix that and give each button ~44px of height, which is the
-     reliable thumb target; the label stacks above the price to suit the shape. */
-  .item-row{display:flex;flex-wrap:wrap;gap:6px 8px;padding:11px 4px;align-items:flex-start}
+     The sizes are a grid so prices line up down the page, but the columns are
+     CAPPED rather than 1fr: at a third of the screen each pill was ~118px and
+     read as a block instead of a button, outweighing the fragrance name.
+     Label and price share one line, as on desktop, which lets the pill sit at
+     38px and puts roughly 6.5 products on a screen instead of 4.5. */
+  .item-row{display:flex;flex-wrap:wrap;gap:6px 8px;padding:10px 4px;align-items:flex-start}
   .item-info{flex:1 1 auto;min-width:0}
   .item-name{font-size:14px;white-space:normal}
   /* #3 — was 9.5px at .75 opacity, the smallest text on the page, and it
      carries the DNA notes and batch years people actually buy on. */
   .item-subtext{font-size:11px;opacity:.9;margin-top:3px;line-height:1.35}
   .item-badges{flex-shrink:0;order:2}
-  .sizes{display:grid;grid-template-columns:repeat(3,1fr);order:3;width:100%;gap:6px;margin-top:5px}
-  .cat-section.no-2ml .sizes{grid-template-columns:repeat(2,1fr)}
+  .sizes{display:grid;grid-template-columns:repeat(3,minmax(0,92px));justify-content:start;
+    order:3;width:100%;gap:6px;margin-top:6px}
+  .cat-section.no-2ml .sizes{grid-template-columns:repeat(2,minmax(0,92px))}
   .size-head{display:none}
-  .sz-btn{flex-direction:column;justify-content:center;gap:1px;min-height:44px;padding:6px 4px;
-    font-size:12.5px;border-radius:8px;width:100%}
-  .sz-btn>span:first-child{font-size:9.5px;font-weight:700;letter-spacing:.4px;opacity:.72}
-  .sz-btn>span:first-child::after{content:none}
-  .sz-btn.selected>span:first-child{opacity:.85}
-  .sz-btn.on-sale{padding:6px 4px}
-  /* Ghost pills come back here — they hold the empty column open so the
-     grid stays aligned, same as on desktop. */
-  .sz-slot{display:grid;place-items:center;min-height:44px;padding:6px 4px;border-radius:8px;font-size:12px}
-  .sz-soldout{grid-column:1/-1;padding:10px 12px}
+  .sz-btn{flex-direction:row;justify-content:center;gap:4px;min-height:38px;padding:5px 4px;
+    font-size:13px;border-radius:8px;width:100%}
+  .sz-btn>span:first-child{font-size:11px;font-weight:700;letter-spacing:.3px;opacity:.72}
+  .sz-btn.selected>span:first-child{opacity:.9}
+  /* Widest possible pill is a selected 10ml on sale: tick + "10ml" + struck
+     price + live price. Trimmed a little so it stays inside the 92px cap. */
+  .sz-btn.on-sale{padding:5px 3px;gap:3px;font-size:12px}
+  .sz-btn.on-sale .sz-was{font-size:9px;margin-right:2px}
+  /* Ghost pills hold an empty column open so the grid stays aligned. */
+  .sz-slot{display:grid;place-items:center;min-height:38px;padding:5px 4px;border-radius:8px;font-size:12px}
+  .sz-soldout{grid-column:1/-1;padding:9px 12px}
 
   /* Cart bottom sheet */
   .cart-panel{max-height:88vh;padding-bottom:env(safe-area-inset-bottom,0px)}
