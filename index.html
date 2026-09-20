@@ -1,7 +1,7 @@
 <html lang="en" style="--brand-col: #c9a872; --brand-weight: 600; --brand-style: normal; --brand-transform: uppercase; --brand-size: 17px; --cat-title-size: 19px; --note-color: #7a6a88; --note-style: italic; --bg: #0a0a0a; --bg2: #111111; --surf: #1a1a1a; --surf2: #222222; --surf3: #2c2c2c; --cream: #f0f0f0; --cream2: #c8c0b0; --muted: #686868; --line: #242424; --line2: #363636; --accent: #c8a060; --new: #2a6e40; --glass-header: rgba(10,10,10,.92); --glass-filter: rgba(10,10,10,.96); --glass-info: rgba(10,10,10,.55); --cat-title-color: #8a3020; --header-h: 85px; --stack-h: 140px;"><head>
 <meta charset="UTF-8">
-<meta name="build-timestamp" content="2026-09-19T14:07:42.227Z">
-<script data-vcheck="1">(function(){var V='2026-09-19T14:07:42.227Z';var KEY='_za_bounce';
+<meta name="build-timestamp" content="2026-09-20T03:44:12.626Z">
+<script data-vcheck="1">(function(){var V='2026-09-20T03:44:12.626Z';var KEY='_za_bounce';
 try{if(navigator.serviceWorker&&navigator.serviceWorker.getRegistrations){navigator.serviceWorker.getRegistrations().then(function(rs){rs.forEach(function(r){r.unregister();});}).catch(function(){});}}catch(e){}
 try{if(window.caches&&caches.keys){caches.keys().then(function(ks){ks.forEach(function(k){caches.delete(k);});}).catch(function(){});}}catch(e){}
 var last_=0;
@@ -6981,6 +6981,121 @@ function downloadHTML(){
 }
 
 
+// ── SHARED TYPE FIT ───────────────────────────────────────────────
+// The body size used to be a number typed in by hand, so it knew nothing about
+// how much stock there was: add enough fragrances and the PDF silently spilled
+// onto a second, unstyled page. This measures instead. It models the A4 page
+// budget in millimetres, mirroring the PDF's own CSS, and steps the size down
+// until every category fits on one page. The images are given the same number
+// so the two formats can never drift apart.
+const FIT_MAX_PT=10.5, FIT_MIN_PT=7;      // floor: below this, shrinking is the wrong fix
+const FIT_RATIO={brand:10.5/9, badge:7/9, was:7.6/9, note:0.82};  // relative to body
+function fitBodyPt(){
+  const P=25.4/72;                         // one point, in mm
+  const USABLE=297-2*14;                   // A4 height less the page padding
+  const MAST=15*P*1.15+2+(1.2*P+1.2+6*P*1.35+1.2+0.5*P)+3;
+  const CAT =12*P*1.35+1.5+1.2*P+2;
+  const COLH=5.5*P*1.35+0.8+0.4*P+1.2;
+  const AVAIL=USABLE-MAST-CAT-COLH;
+  // Tallest of the two columns, split at the most even point — the same
+  // balancing rule splitBrands() uses when it actually lays the page out.
+  // Calibration. The bare arithmetic came out about 8% short of what the
+  // browser actually produces — line boxes get rounded up, and badges with
+  // padding push their row taller. Checked against a real 8pt render, where
+  // this predicted 204mm and the page truly used 220mm. Without it the
+  // estimate chose 9.75pt at "99.6% full" and the real page overflowed.
+  const CAL=1.08;
+  const tallest=(groups,fs)=>{
+    const head=fs*FIT_RATIO.brand*P*1.35+0.5+0.4*P+0.6;
+    const item=fs*P*1.35+2*0.4+0.3*P;
+    const hs=groups.map(n=>(head+n*item+1.5)*CAL);
+    const tot=hs.reduce((a,b)=>a+b,0);
+    if(hs.length<2) return tot;
+    let best=Infinity,acc=0;
+    for(let i=1;i<hs.length;i++){acc+=hs[i-1];best=Math.min(best,Math.max(acc,tot-acc));}
+    return best;
+  };
+  const worst=fs=>{
+    let w=0;
+    CATS.forEach(cat=>{
+      const prods=PRODUCTS.filter(p=>p.cat===cat.key);
+      if(!prods.length) return;
+      const brands=[...new Set(prods.map(p=>p.brand))].sort();
+      w=Math.max(w,tallest(brands.map(b=>prods.filter(p=>p.brand===b).length),fs));
+    });
+    return w;
+  };
+  for(let fs=FIT_MAX_PT; fs>=FIT_MIN_PT; fs=Math.round((fs-0.25)*100)/100){
+    if(worst(fs)<=AVAIL) return {pt:fs,fits:true};
+  }
+  return {pt:FIT_MIN_PT,fits:false};       // caller warns rather than shrinking further
+}
+
+// ── REAL MEASUREMENT ──────────────────────────────────────────────
+// fitBodyPt() above is only an estimate; this renders the actual page markup
+// off-screen at candidate sizes and measures it, which is the only way to know.
+// Starts from the estimate and walks down, so it usually settles in two or
+// three tries rather than sweeping the whole range.
+let PDF_FIT_CACHE=null;
+function exportSig(){
+  return PRODUCTS.length+':'+PRODUCTS.map(p=>p.cat+p.brand).join('|').length+':'+
+         CATS.map(c=>c.key).join(',')+':'+(SETTINGS.title||'');
+}
+function measurePdfFit(pageInner,setSizes){
+  let probe=null;
+  try{
+    probe=document.createElement('div');
+    probe.setAttribute('aria-hidden','true');
+    probe.style.cssText='position:fixed;left:-99999px;top:0;visibility:hidden;pointer-events:none;z-index:-1';
+    document.body.appendChild(probe);
+    // Ask the browser what a millimetre is rather than assuming 96dpi.
+    const ruler=document.createElement('div');
+    ruler.style.cssText='height:100mm';
+    probe.appendChild(ruler);
+    const PXMM=ruler.getBoundingClientRect().height/100;
+    probe.removeChild(ruler);
+    if(!(PXMM>0)) throw new Error('no layout');
+    // 297mm page, 14mm padding top and bottom, plus 3mm so a hairline
+    // rounding difference in the print engine can't cost a whole page.
+    const room=(297-2*14-3)*PXMM;
+    const heightAt=fs=>{
+      setSizes(fs);
+      let tallest=0;
+      CATS.forEach(cat=>{
+        if(!PRODUCTS.some(p=>p.cat===cat.key)) return;
+        probe.innerHTML='<div style="width:210mm;padding:0 16mm;box-sizing:border-box;'+
+          "font-family:'Hanken Grotesk',sans-serif;font-size:"+fs+'pt;line-height:1.35">'+
+          pageInner(cat)+'</div>';
+        tallest=Math.max(tallest,probe.firstChild.getBoundingClientRect().height);
+      });
+      return tallest;
+    };
+    let fs=fitBodyPt().pt, fits=false;
+    while(fs>=FIT_MIN_PT&&heightAt(fs)>room) fs=Math.round((fs-0.25)*100)/100;
+    if(fs>=FIT_MIN_PT){
+      fits=true;
+      // the estimate can also be too cautious, so try to climb back up
+      while(fs<FIT_MAX_PT&&heightAt(Math.round((fs+0.25)*100)/100)<=room)
+        fs=Math.round((fs+0.25)*100)/100;
+    } else fs=FIT_MIN_PT;
+    return {pt:fs,fits};
+  }catch(e){
+    // No DOM to measure with — fall back to the estimate, one step down for safety.
+    const est=fitBodyPt();
+    return {pt:Math.max(FIT_MIN_PT,Math.round((est.pt-0.25)*100)/100),fits:est.fits};
+  }finally{
+    if(probe&&probe.parentNode) probe.parentNode.removeChild(probe);
+  }
+}
+// The images use whatever the PDF measured, so the two cannot diverge. If no
+// PDF has been made yet, a measure-only run works it out without opening one.
+function exportBodyPt(){
+  try{
+    if(PDF_FIT_CACHE&&PDF_FIT_CACHE.sig===exportSig()) return PDF_FIT_CACHE.pt;
+    return generatePDF({measureOnly:true}).pt;
+  }catch(e){ return fitBodyPt().pt; }
+}
+
 // ── SHARED EXPORT HELPERS ─────────────────────────────────────────
 // The human part of the note field — DNA lines, batch years, collection
 // names — with anything already shown elsewhere stripped out (a millilitre
@@ -7006,7 +7121,18 @@ function fitCanvasText(ctx,text,maxW){
   return lo>1?text.slice(0,lo)+'…':'';
 }
 
-function generatePDF(){
+function generatePDF(opts){
+  // Sizes are measured against a real render, not estimated — see the fitting
+  // pass further down. They are reassigned as candidate sizes are tried, so the
+  // builders below must read them at call time.
+  let BODY, PT_BRAND, PT_BADGE, PT_WAS;
+  const setSizes=fs=>{
+    BODY=fs;
+    PT_BRAND=+(fs*FIT_RATIO.brand).toFixed(2);
+    PT_BADGE=+(fs*FIT_RATIO.badge).toFixed(2);
+    PT_WAS  =+(fs*FIT_RATIO.was).toFixed(2);
+  };
+  setSizes(fitBodyPt().pt);   // estimate only — the measuring pass decides
   // Prices sit in two fixed 11mm slots so 5ml and 10ml align down the page.
   // An item with no 10ml gets an em-dash, never a price nudged into the 10ml slot.
   function mlQual(p){
@@ -7025,7 +7151,7 @@ function generatePDF(){
   function slot5(p){
     if(p.sold) return '<span style="opacity:.30;font-weight:400">&mdash;</span>';
     const sale5=p.saleP5&&p.saleP5>0?p.saleP5:null;
-    const was=sale5?`<span style="text-decoration:line-through;color:#999999;font-size:7.6pt;font-weight:400;margin-right:1pt">$${p.p5}</span>`:'';
+    const was=sale5?`<span style="text-decoration:line-through;color:#999999;font-size:${PT_WAS}pt;font-weight:400;margin-right:1pt">$${p.p5}</span>`:'';
     return `${was}<span style="font-weight:700;${sale5?'color:#b03030;':''}">$${sale5||p.p5}</span>`;
   }
   function slot10(p){
@@ -7036,14 +7162,14 @@ function generatePDF(){
     const sale10=p.saleP10&&p.saleP10>0?p.saleP10:null;
     const act10=sale10||(p.p10||null);
     if(!act10) return '<span style="opacity:.30;font-weight:400">&mdash;</span>';
-    const was=sale10?`<span style="text-decoration:line-through;color:#999999;font-size:7.6pt;font-weight:400;margin-right:1pt">$${p.p10}</span>`:'';
+    const was=sale10?`<span style="text-decoration:line-through;color:#999999;font-size:${PT_WAS}pt;font-weight:400;margin-right:1pt">$${p.p10}</span>`:'';
     return `${was}<span style="font-weight:700;${sale10?'color:#b03030;':''}">$${act10}</span>`;
   }
   function badgeStr(p){
     const out=[];
-    if(p.saleP5>0||p.saleP10>0) out.push(`<span style="font-size:7pt;font-weight:800;padding:0.5pt 2.5pt;border-radius:2px;margin-left:2pt;vertical-align:middle;color:#e08080;background:rgba(180,30,30,.25);letter-spacing:.3px">SALE</span>`);
-    if(p.badge==='NEW') out.push(`<span style="font-size:7pt;font-weight:700;padding:0.5pt 2.5pt;border-radius:2px;margin-left:2pt;vertical-align:middle;color:#70d090;background:rgba(42,110,72,.2)">New</span>`);
-    if(p.badge==='LIMITED') out.push(`<span style="font-size:7pt;font-weight:700;padding:0.5pt 2.5pt;border-radius:2px;margin-left:2pt;vertical-align:middle;color:#7a5020;background:#f5edde">LTD</span>`);
+    if(p.saleP5>0||p.saleP10>0) out.push(`<span style="font-size:${PT_BADGE}pt;font-weight:800;padding:0.5pt 2.5pt;border-radius:2px;margin-left:2pt;vertical-align:middle;color:#e08080;background:rgba(180,30,30,.25);letter-spacing:.3px">SALE</span>`);
+    if(p.badge==='NEW') out.push(`<span style="font-size:${PT_BADGE}pt;font-weight:700;padding:0.5pt 2.5pt;border-radius:2px;margin-left:2pt;vertical-align:middle;color:#70d090;background:rgba(42,110,72,.2)">New</span>`);
+    if(p.badge==='LIMITED') out.push(`<span style="font-size:${PT_BADGE}pt;font-weight:700;padding:0.5pt 2.5pt;border-radius:2px;margin-left:2pt;vertical-align:middle;color:#7a5020;background:#f5edde">LTD</span>`);
     return out.join('');
   }
 
@@ -7085,7 +7211,7 @@ function generatePDF(){
   const colHdr=`<div style="display:grid;grid-template-columns:1fr 11mm 11mm;font-size:5.5pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#777777;font-family:'Hanken Grotesk',sans-serif;padding-bottom:.6mm;margin-bottom:1mm;border-bottom:.3pt solid rgba(201,168,114,.2)">
     <span>Fragrance</span><span style="text-align:right">5ml</span><span style="text-align:right">10ml</span></div>`;
 
-  const pages=CATS.map((catDef,ci)=>{
+  function pageInner(catDef){
     const prods=PRODUCTS.filter(p=>p.cat===catDef.key);
     const brands=[...new Set(prods.map(p=>p.brand))].sort();
     const noteHtml=catDef.note
@@ -7095,8 +7221,8 @@ function generatePDF(){
       const items=prods.filter(p=>p.brand===br);
       return `
         <div style="margin-bottom:1.5mm;break-inside:avoid">
-          <div style="font-size:10.5pt;font-weight:700;color:#c8a060;margin-bottom:.6mm;font-family:'Cormorant Garamond',Georgia,serif;page-break-after:avoid;border-bottom:0.4pt solid rgba(201,168,114,.25);padding-bottom:.5mm">${br}</div>
-          ${items.map(p=>`<div style="display:grid;grid-template-columns:1fr 11mm 11mm;align-items:baseline;padding:.4mm 0;font-size:9pt;border-bottom:.3pt dotted rgba(201,168,114,.3);${p.sold?'opacity:.38':''}">
+          <div style="font-size:${PT_BRAND}pt;font-weight:700;color:#c8a060;margin-bottom:.6mm;font-family:'Cormorant Garamond',Georgia,serif;page-break-after:avoid;border-bottom:0.4pt solid rgba(201,168,114,.25);padding-bottom:.5mm">${br}</div>
+          ${items.map(p=>`<div style="display:grid;grid-template-columns:1fr 11mm 11mm;align-items:baseline;padding:.4mm 0;font-size:${BODY}pt;border-bottom:.3pt dotted rgba(201,168,114,.3);${p.sold?'opacity:.38':''}">
             <span style="min-width:0;overflow:hidden;color:#e8e8e8;font-family:'Hanken Grotesk',sans-serif;white-space:nowrap;text-overflow:ellipsis;padding-right:2mm;${p.sold?'text-decoration:line-through;':''}">${p.name}${mlQual(p)}${badgeStr(p)}${noteStr(p)}</span>
             <span style="text-align:right;white-space:nowrap;font-family:'Hanken Grotesk',sans-serif;color:#c8a060">${slot5(p)}</span>
             <span style="text-align:right;white-space:nowrap;font-family:'Hanken Grotesk',sans-serif;color:#c8a060">${slot10(p)}</span>
@@ -7108,18 +7234,29 @@ function generatePDF(){
       <div style="flex:1;min-width:0">${colHdr}${colA.map(brandHtml).join('')}</div>
       <div style="flex:1;min-width:0">${colHdr}${colB.map(brandHtml).join('')}</div>
     </div>`;
-    const topContent=pageHdr;
-    const availH=ci===0?FIRST_CONTENT_H:OTHER_CONTENT_H;
-    return `<div class="page">
-      ${topContent}
+    return `
+      ${pageHdr}
       <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:1.5mm;margin-bottom:2mm;border-bottom:1.2pt solid rgba(201,168,114,.5)">
         <span style="font-size:12pt;font-weight:700;text-transform:uppercase;letter-spacing:3px;font-family:'Hanken Grotesk',sans-serif;color:#f0f0f0">${catDef.label}</span>
 
       </div>
       ${noteHtml}
-      ${brandsHtml}
-    </div>`;
-  });
+      ${brandsHtml}`;
+  }
+
+  // ── FITTING PASS ────────────────────────────────────────────────
+  // The estimate was not good enough: the two columns are one flex block, and
+  // a flex block cannot be split across pages. Overflow by a single millimetre
+  // and the browser moves the WHOLE block to page two, leaving page one blank
+  // below the heading — which is exactly what 9.75pt did. So the page is now
+  // built off-screen at each candidate size and actually measured.
+  const FIT=measurePdfFit(pageInner,setSizes);
+  setSizes(FIT.pt);
+  if(!FIT.fits) showToast('Heads up: a category no longer fits one page even at '+FIT_MIN_PT+'pt');
+  PDF_FIT_CACHE={pt:FIT.pt,fits:FIT.fits,sig:exportSig()};
+  if(opts&&opts.measureOnly) return FIT;
+
+  const pages=CATS.map(catDef=>`<div class="page">${pageInner(catDef)}</div>`);
 
   const win=window.open('','_blank');
   if(!win){showToast('⚠ Please allow pop-ups for this page to generate PDFs.',4000);return;}
@@ -7129,7 +7266,7 @@ function generatePDF(){
       @page{size:A4;margin:0}
       *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
       html,body{background:#0a0a0a!important;color-scheme:dark}
-      body{font-family:'Hanken Grotesk',sans-serif;color:#f0f0f0;font-size:9pt;line-height:1.35}
+      body{font-family:'Hanken Grotesk',sans-serif;color:#f0f0f0;font-size:${BODY}pt;line-height:1.35}
       .page{background:#0a0a0a!important;padding:14mm 16mm;box-sizing:border-box;position:relative}.page:not(:first-child){page-break-before:always;break-before:page}
     </style>
     </head><body>${pages.join('')}</body></html>`);
@@ -7388,6 +7525,10 @@ function generateImages(){
    generatePDF(). Every image is self-contained (full masthead on each)
    because categories get shared individually.                          */
 function drawCategoryCanvas(catDef,prods){
+  // Same measured size as the PDF, so the two formats stay locked together.
+  const BODY=exportBodyPt();
+  const PT_BRAND=BODY*FIT_RATIO.brand, PT_BADGE=BODY*FIT_RATIO.badge,
+        PT_WAS=BODY*FIT_RATIO.was,     PT_NOTE=BODY*FIT_RATIO.note;
   // ── unit conversions ──────────────────────────────────────────────
   const W=1240, H0=1754;       // A4 shape at ~150dpi
   let H=H0;                    // may grow if a category outgrows the shrink floor
@@ -7452,19 +7593,19 @@ function drawCategoryCanvas(catDef,prods){
     return m?' ('+m[1]+'ml)':'';
   }
   function priceSlots(p,k){
-    if(p.sold) return {full:[{t:'—',pt:9*k,wt:400,col:GOLD,alpha:.30}]};
+    if(p.sold) return {full:[{t:'—',pt:BODY*k,wt:400,col:GOLD,alpha:.30}]};
     const sale5=p.saleP5&&p.saleP5>0?p.saleP5:null;
     const sale10=p.saleP10&&p.saleP10>0?p.saleP10:null;
     const act5=sale5||p.p5, act10=sale10||(p.p10||null);
     const s5=[];
-    if(sale5) s5.push({t:'$'+p.p5,pt:7.6*k,wt:400,col:'#999999',strike:true,gap:1.2*PT*k});
-    s5.push({t:'$'+act5,pt:9*k,wt:700,col:sale5?'#b03030':GOLD});
+    if(sale5) s5.push({t:'$'+p.p5,pt:PT_WAS*k,wt:400,col:'#999999',strike:true,gap:1.2*PT*k});
+    s5.push({t:'$'+act5,pt:BODY*k,wt:700,col:sale5?'#b03030':GOLD});
     const s10=[];
     if(act10){
-      if(sale10) s10.push({t:'$'+p.p10,pt:7.6*k,wt:400,col:'#999999',strike:true,gap:1.2*PT*k});
-      s10.push({t:'$'+act10,pt:9*k,wt:700,col:sale10?'#b03030':GOLD});
+      if(sale10) s10.push({t:'$'+p.p10,pt:PT_WAS*k,wt:400,col:'#999999',strike:true,gap:1.2*PT*k});
+      s10.push({t:'$'+act10,pt:BODY*k,wt:700,col:sale10?'#b03030':GOLD});
     } else {
-      s10.push({t:'—',pt:9*k,wt:400,col:GOLD,alpha:.30});
+      s10.push({t:'—',pt:BODY*k,wt:400,col:GOLD,alpha:.30});
     }
     return {s5,s10};
   }
@@ -7500,13 +7641,13 @@ function drawCategoryCanvas(catDef,prods){
     return out;
   }
   function badgeW(b,k){
-    c.font=font(7*k,b.wt,SANS);
+    c.font=font(PT_BADGE*k,b.wt,SANS);
     return c.measureText(b.txt).width+2*2.5*PT*k+2*PT*k; // padding + margin-left
   }
   function drawBadge(b,x,y,k){ // x = left edge (incl. margin), y = text baseline
     const ml=2*PT*k, padX=2.5*PT*k, padY=0.5*PT*k;
-    c.font=font(7*k,b.wt,SANS);
-    const tw=c.measureText(b.txt).width, fh=7*PT*k;
+    c.font=font(PT_BADGE*k,b.wt,SANS);
+    const tw=c.measureText(b.txt).width, fh=PT_BADGE*PT*k;
     const bx=x+ml, bh=fh+2*padY, by=y-fh*0.78-padY;
     c.fillStyle=b.bg; rr(bx,by,tw+2*padX,bh,2*CSSPX); c.fill();
     c.fillStyle=b.col; c.textAlign='left'; c.fillText(b.txt,bx+padX,y);
@@ -7518,9 +7659,9 @@ function drawCategoryCanvas(catDef,prods){
   const byBrand=br=>prods.filter(p=>p.brand===br);
   const geo=k=>{
     // Sizes track the PDF exactly: body 8pt, brand headings 10pt.
-    const brandLineH=10.5*PT*k*1.35, brandPad=0.5*MM*k, brandRule=Math.max(1,0.4*PT),
+    const brandLineH=PT_BRAND*PT*k*1.35, brandPad=0.5*MM*k, brandRule=Math.max(1,0.4*PT),
           brandGap=0.6*MM*k, blockGap=1.5*MM*k,
-          itemH=9*PT*k*1.35+2*(0.4*MM*k), itemRule=Math.max(1,0.3*PT);
+          itemH=BODY*PT*k*1.35+2*(0.4*MM*k), itemRule=Math.max(1,0.3*PT);
     return {
       brandLineH,brandPad,brandRule,brandGap,blockGap,itemH,itemRule,
       headH:brandLineH+brandPad+brandRule+brandGap,
@@ -7638,7 +7779,7 @@ function drawCategoryCanvas(catDef,prods){
     let cy=listTop;
     brList.forEach(br=>{
       // brand name + hairline
-      c.font=font(10.5*k,700,SERIF); c.fillStyle=GOLD; c.textAlign='left';
+      c.font=font(PT_BRAND*k,700,SERIF); c.fillStyle=GOLD; c.textAlign='left';
       c.fillText(br,x,cy+g.brandLineH*0.78);
       cy+=g.brandLineH+g.brandPad;
       rule(x,cy,COL_W,g.brandRule,'rgba(201,168,114,.25)');
@@ -7655,15 +7796,15 @@ function drawCategoryCanvas(catDef,prods){
         const bList=p.sold?[]:badgesFor(p);
         let bw=0; bList.forEach(b=>bw+=badgeW(b,k));
         const mlq=mlQual(p);
-        c.font=font(9*k,400,SANS);
+        c.font=font(BODY*k,400,SANS);
         const qw=mlq?c.measureText(mlq).width:0;
         const avail=COL_W-2*SLOT_W-2*MM-bw-qw;
-        c.font=font(9*k,400,SANS); c.fillStyle='#e8e8e8'; c.textAlign='left';
+        c.font=font(BODY*k,400,SANS); c.fillStyle='#e8e8e8'; c.textAlign='left';
         const nm=ellipsize(p.name,Math.max(20,avail));
         c.fillText(nm,x,base);
         let nx=x+c.measureText(nm).width;
         if(mlq){
-          c.font=font(9*k,400,SANS); c.globalAlpha=(p.sold?0.38:1)*0.55;
+          c.font=font(BODY*k,400,SANS); c.globalAlpha=(p.sold?0.38:1)*0.55;
           c.fillText(mlq,nx,base); nx+=c.measureText(mlq).width;
           c.globalAlpha=p.sold?0.38:1;
         }
@@ -7671,7 +7812,7 @@ function drawCategoryCanvas(catDef,prods){
         // DNA line / batch year, trimmed into whatever room is left
         const nt=exportNoteText(p);
         if(nt){
-          c.font=font(7.38*k,400,SANS);
+          c.font=font(PT_NOTE*k,400,SANS);
           const room=(x+COL_W-2*SLOT_W-1.5*MM)-(nx+1.2*MM);
           const shown=fitCanvasText(c,'· '+nt,room);
           if(shown){
