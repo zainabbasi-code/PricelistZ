@@ -24,6 +24,12 @@ document.addEventListener('visibilitychange',function(){if(!document.hidden)chec
 <meta property="og:title" content="Zain A. · Decant Price List">
 <meta property="og:description" content="5ml and 10ml decants of niche, designer and Middle Eastern fragrances. Pickup in Mill Park 3082 or post.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://zainabbasi-code.github.io/PricelistZ/">
+<meta property="og:image" content="https://zainabbasi-code.github.io/PricelistZ/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Zain A. Fragrance Decants: 5ml and 10ml niche, designer and Middle Eastern fragrances. Pickup Mill Park 3082, post from $5.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;family=Montserrat:wght@700&amp;family=Playfair+Display:wght@600&amp;display=swap" rel="stylesheet">
@@ -3190,24 +3196,20 @@ function formatOrderText(){
   const sizes=Object.keys(groups).sort((a,b)=>sizeMl(b)-sizeMl(a));
   const prefix=(SETTINGS.orderPrefix||"Hi Zain, here's my order:");
   const suffix=(SETTINGS.orderSuffix||'').trim();
+  // Receipt style: a bold size heading, numbered lines, then a divider and the money
   let msg=prefix+'\n', n=0;
   sizes.forEach(sz=>{
-    const g=groups[sz];
-    const units=g.reduce((s,x)=>s+x.c.qty,0);
-    msg+='\n*— '+sz+' ('+units+') —*\n';
-    g.forEach(x=>{
+    msg+='\n*'+sz+'*\n';
+    groups[sz].forEach(x=>{
       n++;
-      msg+=n+'. ['+sz+'] '+x.p.brand+' – '+x.p.name+(x.c.qty>1?' ×'+x.c.qty:'')+' – $'+(x.c.price*x.c.qty)+'\n';
+      msg+=n+'. '+x.p.brand+' '+x.p.name+(x.c.qty>1?' ×'+x.c.qty:'')+' · $'+(x.c.price*x.c.qty)+'\n';
     });
   });
-  const tally=sizes.map(sz=>groups[sz].reduce((s,x)=>s+x.c.qty,0)+' × '+sz).join('  ·  ');
-  const totalUnits=rows.reduce((s,x)=>s+x.c.qty,0);
-  msg+='\n*Sizes: '+tally+'*   ('+totalUnits+' decant'+(totalUnits===1?'':'s')+')\n';
-  msg+='Subtotal: $'+sub+'\n';
-  msg+='Delivery: '+dlv.label+' ('+dlv.costTxt+')\n';
-  // keeps a record in the chat that the risk was stated
-  if(selDlv==='untracked'&&(SETTINGS.orderPostageNote||'').trim()) msg+='Note: '+SETTINGS.orderPostageNote.trim()+'\n';
-  msg+='Total: $'+total;
+  msg+='\n──────────\n';
+  msg+='Subtotal · $'+sub+'\n';
+  const dlvLine={pickup:'Pickup, '+(SETTINGS.pickup||'')+' · Free',untracked:'Untracked post · $'+dlv.cost,tracked:'Tracked post · $'+dlv.cost}[selDlv]||(dlv.label+' · '+dlv.costTxt);
+  msg+=dlvLine+'\n';
+  msg+='*Total · $'+total+'*';
   if(suffix) msg+='\n\n'+suffix;
   return msg;
 }
@@ -3224,21 +3226,32 @@ function openPackList(){
 }
 function parseOrder(txt){
   const items=[],bad=[];
+  let curSize=null;   // receipt format: "*10ml*" heading, then "• Brand Name ×2 · $60" lines
   txt.split(/\r?\n/).forEach(function(raw){
     const line=raw.replace(/\*/g,'').trim();
     if(!line||/^\s*(subtotal|delivery|total|sizes)\b/i.test(line)) return;
+    const hm=line.match(/^[—–-]*\s*([\d.]+)\s*ml\b[^a-z]*$/i);
+    if(hm){curSize=hm[1]+'ml';return;}
+    if(/^[•·]/.test(line)){
+      const qm=line.match(/[×x]\s*(\d+)/);
+      const pm=line.match(/\$\s*([\d.]+)\s*$/);
+      let body=line.replace(/^[•·]\s*/,'').replace(/[×x]\s*\d+/,'').replace(/[·–—-]\s*\$\s*[\d.]+\s*$/,'').replace(/\s{2,}/g,' ').trim();
+      if(!curSize){bad.push(raw.trim());return;}
+      items.push({size:curSize,qty:qm?parseInt(qm[1],10):1,price:pm?parseFloat(pm[1]):null,body:body});
+      return;
+    }
     if(!/^\d+[.)]/.test(line)) return;              // not an item line
     const qm=line.match(/[×x]\s*(\d+)/);
     const qty=qm?parseInt(qm[1],10):1;
     const pm=line.match(/\$\s*([\d.]+)\s*$/);
     const price=pm?parseFloat(pm[1]):null;
     const sm=line.match(/\[\s*([\d.]+\s*ml)\s*\]/i)||line.match(/\(\s*([\d.]+\s*ml)\s*\)/i);
-    const size=sm?sm[1].replace(/\s+/g,'').toLowerCase():null;
+    const size=sm?sm[1].replace(/\s+/g,'').toLowerCase():curSize;
     let body=line.replace(/^\d+[.)]\s*/,'')
                  .replace(/\[\s*[\d.]+\s*ml\s*\]/i,'')
                  .replace(/\(\s*[\d.]+\s*ml\s*\)/i,'')
                  .replace(/[×x]\s*\d+/,'')
-                 .replace(/[–—-]\s*\$\s*[\d.]+\s*$/,'')
+                 .replace(/[·–—-]\s*\$\s*[\d.]+\s*$/,'')
                  .replace(/\s{2,}/g,' ').replace(/\s*[–—-]\s*$/,'').trim();
     if(!size){bad.push(raw.trim());return;}
     items.push({size:size,qty:qty,price:price,body:body});
@@ -4467,6 +4480,8 @@ function queueWhere(){if(!_whereRaf) _whereRaf=requestAnimationFrame(updateWhere
 (function(){const c=document.getElementById('catalog');if(c&&window.MutationObserver) new MutationObserver(queueWhere).observe(c,{childList:true});})();
 window.addEventListener('scroll',queueWhere,{passive:true});
 window.addEventListener('resize',queueWhere);
+
+
 
 // Back-to-top arrow: hidden at the top of the page, appears once you scroll down
 function syncScrollTop(){
