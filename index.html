@@ -753,6 +753,28 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
 .cat-section.collapsed .ct-tog{color:var(--gold);border-color:rgba(201,168,114,.45)}
 .ct-chev{transform:rotate(180deg);transition:transform .2s}
 .cat-section.collapsed .ct-chev{transform:none}
+/* Desktop order panel: the list of fragrances scrolls on its own once it fills the
+   space, so the totals and order buttons stay in view. Height is set by syncCartMore(). */
+@media(min-width:1081px){
+  .cart-panel{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+  .cart-panel .cart-scroll{flex:none;overflow-y:auto;min-height:0;overscroll-behavior:contain}
+  .cart-panel .cart-scroll-hint{display:none!important}
+  /* order buttons side by side to save height */
+  .cart-panel .cart-actions{flex-direction:row;gap:8px}
+  .cart-panel .cart-actions>div{display:none!important}
+  .cart-panel .cart-actions .btn-copy,.cart-panel .cart-actions .btn-send{flex:1 1 0;min-width:0;padding:11px 8px;font-size:13px;white-space:nowrap}
+  .cart-panel .bl-long{display:none}
+  /* each item takes less height: quantity and remove side by side */
+  .cart-panel .ci-right{display:grid;grid-template-columns:auto auto;align-items:center;justify-items:end;column-gap:8px;row-gap:6px}
+  .cart-panel .ci-price{grid-column:1/-1}
+  /* a small button that floats at the bottom while the totals are out of view */
+  .cart-more{position:sticky;bottom:12px;align-self:center;z-index:3;display:inline-flex;align-items:center;gap:6px;margin:-34px auto 0;padding:7px 14px;border-radius:999px;border:1px solid rgba(201,168,114,.45);background:rgba(20,18,16,.95);color:var(--gold);font:600 12px/1 var(--sans);cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+  .cart-more[hidden]{display:none}
+}
+@media(max-width:1080px){.cart-more{display:none!important}}
+/* Short button labels only in the side-by-side desktop buttons */
+.bl-short{display:none}
+@media(min-width:1081px){.cart-panel .bl-short{display:inline}}
 /* Categories menu: each category with its brands underneath */
 .cat-drop-menu{left:auto;right:0}
 .cat-drop-menu{width:min(340px,calc(100vw - 28px));padding:8px;gap:0;max-height:min(70vh,560px);overflow-y:auto;overscroll-behavior:contain}
@@ -2108,6 +2130,7 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
       </div>
       <div id="cart-items-list"></div>
     </div>
+    <button type="button" class="cart-more" id="cart-more" hidden onclick="document.getElementById('cart-footer').scrollIntoView({behavior:'smooth',block:'end'})">Delivery &amp; total <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
     <div class="cart-footer" id="cart-footer" style="display: none;">
       <div class="min-warn" id="min-warn" style="display: none;">⚠ Minimum $25 of fragrance — add $2 more</div>
       <div id="min-progress-wrap" style="display: none;">
@@ -2133,7 +2156,7 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
       <div class="cart-actions">
         <button class="btn-copy" id="btn-copy" onclick="copyOrder()" disabled="">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          Copy My Order
+          <span class="bl-long">Copy My Order</span><span class="bl-short">Copy order</span>
         </button>
         <div style="display:flex;align-items:center;gap:8px;margin:2px 0">
           <div style="flex:1;height:1px;background:var(--line)"></div>
@@ -2142,7 +2165,7 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
         </div>
         <button class="btn-send" id="btn-send" onclick="sendOrder()" disabled="">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4 20-7z"></path><path d="M22 2 11 13"></path></svg>
-          Send via WhatsApp
+          <span class="bl-long">Send via WhatsApp</span><span class="bl-short">WhatsApp</span>
         </button>
       </div>
     </div>
@@ -4482,6 +4505,29 @@ window.addEventListener('scroll',queueWhere,{passive:true});
 window.addEventListener('resize',queueWhere);
 
 
+
+// Desktop order panel: show "Delivery & total" while the totals are scrolled out of view
+function syncCartMore(){
+  const p=document.getElementById('cart-panel'),b=document.getElementById('cart-more'),f=document.getElementById('cart-footer');
+  if(!p||!b||!f) return;
+  const sc=p.querySelector('.cart-scroll');
+  if(window.innerWidth<1081||f.style.display==='none'){b.hidden=true;if(sc) sc.style.maxHeight='';return;}
+  // Give the list whatever room is left once the heading and totals fit; it scrolls after that.
+  // On a very short window keep at least ~2 fragrances visible (the whole panel then scrolls).
+  if(sc){
+    const maxH=parseFloat(getComputedStyle(p).maxHeight)||window.innerHeight;
+    const head=p.querySelector('.cart-head');
+    const room=maxH-(head?head.offsetHeight:0)-f.offsetHeight-2;
+    const want=Math.max(170,Math.floor(room))+'px';
+    if(sc.style.maxHeight!==want) sc.style.maxHeight=want;
+  }
+  const fr=f.getBoundingClientRect(),pr=p.getBoundingClientRect();
+  b.hidden=fr.top<pr.bottom-40;   // hide as soon as the totals start to show
+}
+(function(){const p=document.getElementById('cart-panel');if(!p) return;
+  p.addEventListener('scroll',syncCartMore,{passive:true});window.addEventListener('resize',syncCartMore);
+  if(window.MutationObserver) new MutationObserver(()=>requestAnimationFrame(syncCartMore)).observe(p,{childList:true,subtree:true,attributes:true,attributeFilter:['style']});
+  syncCartMore();})();
 
 // Back-to-top arrow: hidden at the top of the page, appears once you scroll down
 function syncScrollTop(){
