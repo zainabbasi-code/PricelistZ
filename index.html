@@ -26,7 +26,7 @@ document.addEventListener('visibilitychange',function(){if(!document.hidden)chec
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&amp;family=Hanken+Grotesk:wght@300;400;500;600;700&amp;family=Montserrat:wght@700&amp;family=Playfair+Display:wght@600&amp;display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#08060A;--bg2:#0f0c12;--surf:#16121c;--surf2:#1e1a26;--surf3:#261f32;
@@ -656,7 +656,7 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
 .cat-drop-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:7px;border:1px solid var(--line2);background:transparent;color:var(--cream2);font-family:var(--sans);font-size:12.5px;font-weight:500;cursor:pointer;transition:.18s ease;white-space:nowrap}
 .cat-drop-btn:hover{color:var(--cream);border-color:rgba(201,168,114,.4);background:rgba(255,255,255,.03)}
 .cat-drop-btn.active{background:rgba(201,168,114,.09);color:var(--gold);font-weight:600;border-color:rgba(201,168,114,.35)}
-.cat-drop-btn.active #cat-drop-chev{transform:rotate(180deg)}
+.cat-drop-wrap.open #cat-drop-chev{transform:rotate(180deg)}
 #cat-drop-chev{transition:transform .2s ease;flex-shrink:0}
 .cat-drop-menu{position:absolute;top:calc(100% + 7px);left:0;background:var(--surf);border:1px solid var(--line2);border-radius:12px;padding:6px;min-width:220px;z-index:500;display:none;flex-direction:column;gap:2px;box-shadow:0 8px 32px rgba(0,0,0,.45)}
 .cat-drop-menu.open{display:flex}
@@ -708,8 +708,100 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
 
 
 </style>
+<style id="layout-v2">
+/* ── Layout v2: tidier phone header, filter bar, headings and order panel; brand jump; desktop gap ── */
+/* The dismissed order hint left an empty grid row (plus a 32px gap) above the list. */
+.main-grid>div:first-child:has(> .order-hint.hidden){display:none}
+@media(min-width:769px){.main-grid{padding-top:28px}}
+/* Shop details: the bottle note line is removed; pickup and postage get gold icons */
+.header-info-strip #info-note,.header-info-strip .info-sep{display:none}
+.header-info-strip{gap:8px 18px;font-size:12px;color:var(--cream2)}
+.header-info-strip #info-pickup,.header-info-strip #info-postage{display:inline-flex;align-items:center;gap:6px;font-weight:500}
+.header-info-strip #info-pickup::before,.header-info-strip #info-postage::before{content:'';flex-shrink:0;width:15px;height:15px;background:var(--gold);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z'/%3E%3Ccircle cx='12' cy='10' r='2.6'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z'/%3E%3Ccircle cx='12' cy='10' r='2.6'/%3E%3C/svg%3E") center/contain no-repeat}
+.header-info-strip #info-postage::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7l9-4 9 4v10l-9 4-9-4z'/%3E%3Cpath d='M3 7l9 4 9-4M12 11v10'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7l9-4 9 4v10l-9 4-9-4z'/%3E%3Cpath d='M3 7l9 4 9-4M12 11v10'/%3E%3C/svg%3E")}
+.cdl-short{display:none}
+@media(max-width:768px){.cdl-short{display:inline}}
+/* Fonts: brand names in Playfair Display, category titles in Montserrat */
+.brand-label{font-family:'Playfair Display',Georgia,serif;font-size:19px;letter-spacing:.3px}
+.cat-title{font-family:'Montserrat',var(--sans)}
+/* Back-to-top arrow: gold so it's easy to spot */
+#scroll-top{border-color:rgba(201,168,114,.55);color:var(--gold);background:rgba(20,18,16,.92);font-weight:700}
+/* "Where am I" strip: hangs under the filter bar without pushing the list down */
+.filter-bar{position:sticky}
+.where{position:absolute;left:0;right:0;top:100%;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:5px 14px;border:0;border-bottom:1px solid rgba(201,168,114,.18);background:#08060a;color:var(--gold);font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;overflow:hidden}
+.where[hidden]{display:none}
+.where #where-text{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.where svg{flex-shrink:0;opacity:.7}
+.where:focus-visible{outline:2px solid var(--gold-d);outline-offset:-2px}
+/* Brand names scroll away fully; the "where am I" strip shows the current brand instead */
+.brand-label{position:static}
+/* Category headings: a clear Hide / Show button on the right, count under the title */
+.cat-head{flex-wrap:wrap;row-gap:3px}
+.cat-head::after{display:none}
+.cat-title::after{display:none!important}
+.cat-count{order:3;flex-basis:100%}
+.ct-tog{order:2;margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;border:1px solid var(--line2);font-family:var(--sans);font-size:12px;font-weight:600;color:var(--cream2);flex-shrink:0;letter-spacing:.2px;text-transform:none}
+.ct-tog .t-show{display:none}
+.cat-section.collapsed .ct-tog .t-hide{display:none}
+.cat-section.collapsed .ct-tog .t-show{display:inline}
+.cat-section.collapsed .ct-tog{color:var(--gold);border-color:rgba(201,168,114,.45)}
+.ct-chev{transform:rotate(180deg);transition:transform .2s}
+.cat-section.collapsed .ct-chev{transform:none}
+/* Categories menu: each category with its brands underneath */
+.cat-drop-menu{left:auto;right:0}
+.cat-drop-menu{width:min(340px,calc(100vw - 28px));padding:8px;gap:0;max-height:min(70vh,560px);overflow-y:auto;overscroll-behavior:contain}
+.md-group{padding:4px 6px 10px}
+.md-group+.md-group{border-top:1px solid var(--line)}
+.md-group .cat-drop-item{padding:10px 0 6px;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);display:flex;justify-content:space-between;align-items:center;border-radius:0;background:none}
+.md-group .cat-drop-item::after{content:'View all \203A';font-size:11px;font-weight:500;letter-spacing:.2px;text-transform:none;color:var(--muted)}
+.md-group .cat-drop-item:hover,.md-group .cat-drop-item.active{background:none}
+.md-group .cat-drop-item.active::after{content:'Showing';color:var(--gold)}
+.md-list{display:grid;grid-template-columns:1fr 1fr;column-gap:14px}
+.brand-chip{border:0;border-radius:6px;padding:6px 0;text-align:left;font-size:13.5px;font-family:var(--sans);background:none;color:var(--cream2);white-space:normal;line-height:1.3;cursor:pointer}
+.brand-chip:hover,.brand-chip:focus-visible{color:var(--gold);outline:none}
+.brand-group{scroll-margin-top:calc(var(--stack-h,110px) + 14px)}
+@media(max-width:768px){
+  /* Header: pickup and postage with icons, Min pill on the right of the same line */
+  .header-info-strip{padding:2px 14px 12px;gap:8px 14px;font-size:13px;align-items:center}
+  .header-info-strip .pill-min{font-size:11.5px;padding:3px 10px;margin-left:auto}
+  /* Bigger category titles and brand names */
+  .cat-title{font-size:20px;letter-spacing:1.4px}
+  .cat-title .ct-x{display:none}
+  .brand-label{font-size:19px}
+  .header-info-strip .pm-x{display:none}
+  /* Filter bar: tabs + Categories on line one, search + Options on line two */
+  .search-wrap{flex:1 1 170px}
+  .opts-wrap{order:6}
+  .opts-menu{right:0;left:auto}
+  .cat-drop-menu{right:0;left:auto}
+  /* Category heading: the collapse marker stays beside the title */
+  .cat-title{letter-spacing:1px}
+  /* Size buttons: a little bigger (was 92 × 38px) */
+  .sizes{grid-template-columns:repeat(3,minmax(0,104px))}
+  .cat-section.no-2ml .sizes{grid-template-columns:repeat(2,minmax(0,104px))}
+  .sz-btn,.sz-slot{min-height:40px}
+  /* Filter bar: underline tabs, Categories on the right, Options as an icon beside search */
+  .filter-inner{row-gap:6px;column-gap:0;padding-top:4px}
+  .tabs{gap:0;flex:1 1 100%;border-bottom:1px solid var(--line)}
+  .cat-drop-wrap{order:6;margin-top:4px;margin-left:8px;flex-shrink:0}
+  .cat-drop-btn{height:38px;padding:0 12px;border-radius:9px;border:1px solid var(--line2);font-size:13px;color:var(--cream2);background:transparent}
+  .cat-drop-btn.active{color:var(--gold);border-color:rgba(201,168,114,.5);background:rgba(201,168,114,.07)}
+  .cdl-full{display:none}
+  .tab{background:none!important;border-radius:0;padding:10px 16px 9px;box-shadow:none!important;font-size:14px}
+  .tab.active{color:var(--gold);box-shadow:inset 0 -2px 0 var(--gold)!important}
+  .search-wrap{margin-top:4px}
+  #search{height:38px}
+  /* A little less space above the first category */
+  .main-grid{padding-top:10px}
+  .cat-head{padding-top:4px}
+  /* Order panel: quantity and remove on one line under the price */
+  .ci-right{display:grid;grid-template-columns:auto auto;align-items:center;justify-items:end;column-gap:8px;row-gap:6px}
+  .ci-price{grid-column:1/-1}
+}
+</style>
+
 </head>
-<body style="" class="compact">
+<body style="">
 
 <header id="header">
   <div class="head-inner">
@@ -737,41 +829,20 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
 
 <div class="filter-bar">
   <div class="filter-inner">
-    <div class="tabs" id="tabs"><button class="tab active" data-cat="all">All</button><button class="tab " data-cat="new">What's New</button><button class="tab " data-cat="sale">On Sale <span class="tab-count">6</span></button></div>
-    <div class="cat-drop-wrap" id="cat-drop-wrap">
-      <button class="cat-drop-btn" id="cat-drop-btn" onclick="toggleCatDrop()" aria-haspopup="true" aria-expanded="false">
-        <span id="cat-drop-label">Categories</span>
-        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true" id="cat-drop-chev"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </button>
-      <div class="cat-drop-menu" id="cat-drop-menu" role="menu"><button class="cat-drop-item" data-cat="niche" onclick="selectCatFromDrop('niche')">Niche Fragrances</button><button class="cat-drop-item" data-cat="designer" onclick="selectCatFromDrop('designer')">Designer Fragrances</button><button class="cat-drop-item" data-cat="middle" onclick="selectCatFromDrop('middle')">Middle Eastern Fragrances</button></div>
-    </div>
-    <div class="opts-wrap" id="opts-wrap">
-      <button class="opts-btn" id="opts-btn" onclick="toggleOptsMenu()" title="Display options" aria-label="Display options">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
-        Options
-      </button>
-      <div class="opts-menu" id="opts-menu">
-        <div class="opts-section-label">Display</div>
-        <button class="opts-item compact-on" id="opts-compact-btn" onclick="toggleViewDensity();toggleOptsMenu()" title="Toggle compact/comfortable">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-          <span id="opts-compact-label">Compact view</span>
-        </button>
-        <div class="opts-section-label" style="margin-top:8px">Sort by</div>
-        <select class="opts-sort-select" id="sort-select" onchange="setSort(this.value);updateOptsBtnLabel()" title="Sort fragrances">
-          <option value="default">Default</option>
-          <option value="price-asc">Price: Low → High</option>
-          <option value="price-desc">Price: High → Low</option>
-          <option value="name-az">Name: A → Z</option>
-          <option value="new-first">✦ New first</option>
-          <option value="in-stock">In stock first</option>
-        </select>
-      </div>
-    </div>
+    <div class="tabs" id="tabs"><button class="tab active" data-cat="all">All</button><button class="tab " data-cat="new">New</button><button class="tab " data-cat="sale">Sale <span class="tab-count">6</span></button></div>
     <div class="search-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
       <input id="search" type="search" placeholder="Search fragrances or brands…" oninput="renderCatalog()">
     </div>
+    <div class="cat-drop-wrap" id="cat-drop-wrap">
+      <button class="cat-drop-btn" id="cat-drop-btn" onclick="toggleCatDrop()" aria-haspopup="true" aria-expanded="false">
+        <span id="cat-drop-label">Brands</span>
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true" id="cat-drop-chev"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </button>
+      <div class="cat-drop-menu" id="cat-drop-menu" role="menu"><button class="cat-drop-item" data-cat="niche" onclick="selectCatFromDrop('niche')">Niche Fragrances</button><button class="cat-drop-item" data-cat="designer" onclick="selectCatFromDrop('designer')">Designer Fragrances</button><button class="cat-drop-item" data-cat="middle" onclick="selectCatFromDrop('middle')">Middle Eastern Fragrances</button></div>
+    </div>
   </div>
+  <button type="button" class="where" id="where" onclick="event.stopPropagation();toggleCatDrop()" aria-label="Where you are in the list. Tap to jump to a category or brand." hidden><span id="where-text"></span><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
 </div>
 
 
@@ -2089,7 +2160,7 @@ table.e-table{width:100%;border-collapse:collapse;font-size:13px}
 <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
 
 <!-- WhatsApp Contact FAB -->
-<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top" aria-label="Scroll to top" class="show">↑</button>
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top" aria-label="Scroll to top">↑</button>
 
 <!-- Undo Delete Toast -->
 <div id="undo-toast" class="">
@@ -2503,7 +2574,8 @@ function applySettings(){
   const p=document.getElementById('info-pickup'),po=document.getElementById('info-postage'),m=document.getElementById('info-minimum'),n=document.getElementById('info-note');
   if(p) p.textContent=SETTINGS.pickup;
   if(po) po.textContent='Post $'+SETTINGS.postageUntracked+'/$'+SETTINGS.postageTracked;
-  if(m) m.textContent='Minimum $'+SETTINGS.minimum+' before postage';
+  // On phones the pill reads "Min $30" so the shop details fit on one line.
+  if(m) m.innerHTML='Min<span class="pm-x">imum</span> $'+(parseFloat(SETTINGS.minimum)||0)+'<span class="pm-x"> before postage</span>';
   if(n) n.textContent=SETTINGS.infoNote||'Labelled glass atomiser bottles';
   syncShopDetails();
 }
@@ -2664,9 +2736,23 @@ try{
 // Search helpers. normText strips accents so "imperial" finds "Bois Imp\u00e9rial",
 // and matchesQuery also searches the note so "aventus" finds its DNA clones.
 function normText(s){return (s==null?'':String(s)).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();}
+// Other names customers type for a brand, so "paco" still finds Rabanne.
+const BRAND_ALIASES={
+  'Rabanne':['Paco Rabanne','Paco'],
+  'Parfums de Marly':['PDM','Marley'],
+  'Maison Francis Kurkdjian':['MFK','Kurkdjian'],
+  'Jean Paul Gaultier':['JPG','Gaultier'],
+  'Yves Saint Laurent':['YSL','Saint Laurent'],
+  'Giorgio Armani':['Armani'],
+  'Dolce & Gabbana':['D&G','Dolce and Gabbana','Dolce Gabbana'],
+  'Louis Vuitton (LV)':['Louis Vuitton','LV'],
+  'Maison Margiela Replica':['Margiela','Replica'],
+  'Hermes':['Hermès'],
+};
 function matchesQuery(p,q){
   if(!q) return true;
-  return normText(p.name).includes(q)||normText(p.brand).includes(q)||normText(p.note).includes(q);
+  if(normText(p.name).includes(q)||normText(p.brand).includes(q)||normText(p.note).includes(q)) return true;
+  return (BRAND_ALIASES[p.brand]||[]).some(a=>normText(a).includes(q));
 }
 function getProduct(id){return PRODUCTS.find(p=>p.id===id)}
 function price2ml(p5){return Math.ceil(p5/2)}
@@ -2822,12 +2908,12 @@ function renderCatalog(){
       const brands=[...new Set(catItems.map(p=>p.brand))].sort();
       sec.innerHTML=`
         <div class="cat-head">
-          <span class="cat-title">${catDef.label}</span>
-          <span class="cat-count">${catItems.length} new</span>
+          <span class="cat-title">${catTitleHtml(catDef.label)}</span>
+          <span class="cat-count">${catItems.length} new</span><span class="ct-tog" aria-hidden="true"><span class="t-hide">Hide</span><span class="t-show">Show</span><svg class="ct-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
         </div>
         ${sizeHeadHtml(has2)}
         ${brands.map(br=>`
-          <div class="brand-group">
+          <div class="brand-group" data-brand="${adwEsc(br)}">
             <div class="brand-label">${br}</div>
             ${catItems.filter(p=>p.brand===br).map(p=>renderItem(p,has2)).join('')}
           </div>`).join('')}`;
@@ -2845,16 +2931,6 @@ function renderCatalog(){
       catalog.innerHTML='<div class="no-results">No items on sale right now — check back soon!</div>';
       return;
     }
-    // Banner
-    const banner=document.createElement('div');
-    banner.className='sale-banner';
-    banner.innerHTML=`
-      <div class="sale-banner-icon">🏷</div>
-      <div>
-        <div class="sale-banner-title">Items On Sale</div>
-        <div class="sale-banner-sub">${saleItems.length} fragrance${saleItems.length!==1?'s':''} on sale now &mdash; original price shown crossed out on each item</div>
-      </div>`;
-    catalog.appendChild(banner);
     let any=false;
     CATS.forEach(catDef=>{
       const catItems=saleItems.filter(p=>p.cat===catDef.key);
@@ -2866,12 +2942,12 @@ function renderCatalog(){
       const brands=[...new Set(catItems.map(p=>p.brand))].sort();
       sec.innerHTML=`
         <div class="cat-head">
-          <span class="cat-title">${catDef.label}</span>
-          <span class="cat-count">${catItems.length} on sale</span>
+          <span class="cat-title">${catTitleHtml(catDef.label)}</span>
+          <span class="cat-count">${catItems.length} on sale</span><span class="ct-tog" aria-hidden="true"><span class="t-hide">Hide</span><span class="t-show">Show</span><svg class="ct-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
         </div>
         ${sizeHeadHtml(has2)}
         ${brands.map(br=>`
-          <div class="brand-group">
+          <div class="brand-group" data-brand="${adwEsc(br)}">
             <div class="brand-label">${br}</div>
             ${catItems.filter(p=>p.brand===br).map(p=>renderItem(p,has2)).join('')}
           </div>`).join('')}`;
@@ -2898,9 +2974,9 @@ function renderCatalog(){
     if(isFlat){
       sec.innerHTML=`
         <div class="cat-head">
-          <span class="cat-title">${catDef.label}</span>
+          <span class="cat-title">${catTitleHtml(catDef.label)}</span>
           ${catDef.note?`<span class="cat-note">✦ ${catDef.note}</span>`:''}
-          <span class="cat-count">${avail} available</span>
+          <span class="cat-count">${avail} available</span><span class="ct-tog" aria-hidden="true"><span class="t-hide">Hide</span><span class="t-show">Show</span><svg class="ct-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
         </div>
         ${sizeHeadHtml(has2)}
         ${prods.map(p=>renderItemFlat(p,has2)).join('')}`;
@@ -2908,13 +2984,13 @@ function renderCatalog(){
       const brands=[...new Set(prods.map(p=>p.brand))].sort();
       sec.innerHTML=`
         <div class="cat-head">
-          <span class="cat-title">${catDef.label}</span>
+          <span class="cat-title">${catTitleHtml(catDef.label)}</span>
           ${catDef.note?`<span class="cat-note">✦ ${catDef.note}</span>`:''}
-          <span class="cat-count">${avail} available</span>
+          <span class="cat-count">${avail} available</span><span class="ct-tog" aria-hidden="true"><span class="t-hide">Hide</span><span class="t-show">Show</span><svg class="ct-chev" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
         </div>
         ${sizeHeadHtml(has2)}
         ${brands.map(br=>`
-          <div class="brand-group">
+          <div class="brand-group" data-brand="${adwEsc(br)}">
             <div class="brand-label">${br}</div>
             ${prods.filter(p=>p.brand===br).map(p=>renderItem(p,has2)).join('')}
           </div>`).join('')}`;
@@ -3851,7 +3927,7 @@ function generatePDF(opts){
   function slot5(p){
     if(p.sold) return '<span style="opacity:.30;font-weight:400">&mdash;</span>';
     const sale5=p.saleP5&&p.saleP5>0?p.saleP5:null;
-    const was=sale5?`<span style="text-decoration:line-through;color:#999999;font-size:${PT_WAS}pt;font-weight:400;margin-right:1pt">$${p.p5}</span>`:'';
+    const was=sale5?`<span style="text-decoration:line-through;color:#999999;font-size:${PT_WAS}pt;font-weight:400;margin-right:3pt">$${p.p5}</span>`:'';
     return `${was}<span style="font-weight:700;${sale5?'color:#b03030;':''}">$${sale5||p.p5}</span>`;
   }
   function slot10(p){
@@ -3862,7 +3938,7 @@ function generatePDF(opts){
     const sale10=p.saleP10&&p.saleP10>0?p.saleP10:null;
     const act10=sale10||(p.p10||null);
     if(!act10) return '<span style="opacity:.30;font-weight:400">&mdash;</span>';
-    const was=sale10?`<span style="text-decoration:line-through;color:#999999;font-size:${PT_WAS}pt;font-weight:400;margin-right:1pt">$${p.p10}</span>`:'';
+    const was=sale10?`<span style="text-decoration:line-through;color:#999999;font-size:${PT_WAS}pt;font-weight:400;margin-right:3pt">$${p.p10}</span>`:'';
     return `${was}<span style="font-weight:700;${sale10?'color:#b03030;':''}">$${act10}</span>`;
   }
   function badgeStr(p){
@@ -3886,8 +3962,7 @@ function generatePDF(opts){
       <span style="flex:1;text-align:right;font-size:6pt;color:#888888;font-family:'Hanken Grotesk',sans-serif;letter-spacing:.4px;white-space:nowrap">Updated ${SETTINGS.lastUpdated}</span>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:baseline;border-top:1.2pt solid #c9a872;border-bottom:0.5pt solid rgba(201,168,114,.35);padding:1.2mm 0;margin-bottom:3mm;font-size:6pt;font-family:'Hanken Grotesk',sans-serif;color:#e0e0e0">
-      <span><b style="color:#c8a060">PICKUP</b>&ensp;${SETTINGS.pickup}</span>
-      <span><b style="color:#c8a060">POST</b>&ensp;$${SETTINGS.postageUntracked} untracked &middot; $${SETTINGS.postageTracked} tracked</span>
+      <span style="display:flex;gap:6mm;align-items:baseline"><span><svg viewBox="0 0 24 24" width="7.5pt" height="7.5pt" fill="none" stroke="#c8a060" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.4pt;margin-right:1.2mm"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg><b style="color:#c8a060">PICKUP</b>&ensp;${SETTINGS.pickup}</span><span><svg viewBox="0 0 24 24" width="7.5pt" height="7.5pt" fill="none" stroke="#c8a060" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1.4pt;margin-right:1.2mm"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg><b style="color:#c8a060">POST</b>&ensp;$${SETTINGS.postageUntracked} untracked &middot; $${SETTINGS.postageTracked} tracked</span></span>
       <span><b style="color:#c8a060">MIN</b>&ensp;$${SETTINGS.minimum} before postage</span>
     </div>`;
 
@@ -3908,7 +3983,7 @@ function generatePDF(opts){
     }
     return [brands.slice(0,best),brands.slice(best)];
   }
-  const colHdr=`<div style="display:grid;grid-template-columns:1fr 11mm 11mm;font-size:5.5pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#777777;font-family:'Hanken Grotesk',sans-serif;padding-bottom:.6mm;margin-bottom:1mm;border-bottom:.3pt solid rgba(201,168,114,.2)">
+  const colHdr=`<div style="display:grid;grid-template-columns:1fr 13mm 13mm;column-gap:1mm;font-size:5.5pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#777777;font-family:'Hanken Grotesk',sans-serif;padding-bottom:.6mm;margin-bottom:1mm;border-bottom:.3pt solid rgba(201,168,114,.2)">
     <span>Fragrance</span><span style="text-align:right">5ml</span><span style="text-align:right">10ml</span></div>`;
 
   function pageInner(catDef){
@@ -3921,8 +3996,8 @@ function generatePDF(opts){
       const items=prods.filter(p=>p.brand===br);
       return `
         <div style="margin-bottom:1.5mm;break-inside:avoid">
-          <div style="font-size:${PT_BRAND}pt;font-weight:700;color:#c8a060;margin-bottom:.6mm;font-family:'Cormorant Garamond',Georgia,serif;page-break-after:avoid;border-bottom:0.4pt solid rgba(201,168,114,.25);padding-bottom:.5mm">${br}</div>
-          ${items.map(p=>`<div style="display:grid;grid-template-columns:1fr 11mm 11mm;align-items:baseline;padding:.4mm 0;font-size:${BODY}pt;border-bottom:.3pt dotted rgba(201,168,114,.3);${p.sold?'opacity:.38':''}">
+          <div style="font-size:${PT_BRAND}pt;font-weight:600;color:#c8a060;margin-bottom:.6mm;font-family:'Playfair Display',Georgia,serif;page-break-after:avoid;border-bottom:0.4pt solid rgba(201,168,114,.25);padding-bottom:.5mm">${br}</div>
+          ${items.map(p=>`<div style="display:grid;grid-template-columns:1fr 13mm 13mm;column-gap:1mm;align-items:baseline;padding:.4mm 0;font-size:${BODY}pt;border-bottom:.3pt dotted rgba(201,168,114,.3);${p.sold?'opacity:.38':''}">
             <span style="min-width:0;overflow:hidden;color:#e8e8e8;font-family:'Hanken Grotesk',sans-serif;white-space:nowrap;text-overflow:ellipsis;padding-right:2mm;${p.sold?'text-decoration:line-through;':''}">${p.name}${mlQual(p)}${badgeStr(p)}${noteStr(p)}</span>
             <span style="text-align:right;white-space:nowrap;font-family:'Hanken Grotesk',sans-serif;color:#c8a060">${slot5(p)}</span>
             <span style="text-align:right;white-space:nowrap;font-family:'Hanken Grotesk',sans-serif;color:#c8a060">${slot10(p)}</span>
@@ -3936,8 +4011,8 @@ function generatePDF(opts){
     </div>`;
     return `
       ${pageHdr}
-      <div style="display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:1.5mm;margin-bottom:2mm;border-bottom:1.2pt solid rgba(201,168,114,.5)">
-        <span style="font-size:12pt;font-weight:700;text-transform:uppercase;letter-spacing:3px;font-family:'Hanken Grotesk',sans-serif;color:#f0f0f0">${catDef.label}</span>
+      <div style="display:flex;justify-content:center;align-items:flex-end;padding-bottom:1.5mm;margin-bottom:2mm;border-bottom:1.2pt solid rgba(201,168,114,.5)">
+        <span style="font-size:12pt;font-weight:700;text-transform:uppercase;letter-spacing:3px;padding-left:3px;font-family:'Montserrat','Hanken Grotesk',sans-serif;color:#f0f0f0">${catDef.label}</span>
 
       </div>
       ${noteHtml}
@@ -3961,7 +4036,7 @@ function generatePDF(opts){
   const win=window.open('','_blank');
   if(!win){showToast('⚠ Please allow pop-ups for this page to generate PDFs.',4000);return;}
   win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${SETTINGS.title||'Zain A.'} &middot; Decant Price List</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Hanken+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Hanken+Grotesk:wght@400;600;700&family=Montserrat:wght@700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
     <style>
       @page{size:A4;margin:0}
       *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
@@ -4010,7 +4085,10 @@ function generateImages(){
     }
   },400);
   // Web fonts must be resolved before canvas can draw with them
-  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(go).catch(go); else go();
+  if(document.fonts&&document.fonts.load){
+    Promise.all(["600 20px 'Playfair Display'","700 20px 'Montserrat'","400 20px 'Hanken Grotesk'","700 20px 'Hanken Grotesk'","600 20px 'Cormorant Garamond'"].map(f=>document.fonts.load(f).catch(()=>{})))
+      .then(()=>document.fonts.ready).then(go).catch(go);
+  } else go();
 }
 
 /* ── A4 PAGE IMAGE — mirrors the PDF page layout exactly ──────────────
@@ -4038,6 +4116,8 @@ function drawCategoryCanvas(catDef,prods){
   const GOLD='#c8a060', RULE='#c9a872', INK='#f0f0f0', MUTED='#888888';
   const SANS="'Hanken Grotesk',sans-serif";
   const SERIF="'Cormorant Garamond',Georgia,serif";
+  // Same fonts as the website: brand names in Playfair Display, category titles in Montserrat.
+  const BRANDF="'Playfair Display',Georgia,serif", CATF="'Montserrat','Hanken Grotesk',sans-serif";
 
   const canvas=document.createElement('canvas');
   canvas.width=W; canvas.height=H0;
@@ -4092,11 +4172,11 @@ function drawCategoryCanvas(catDef,prods){
     const sale10=p.saleP10&&p.saleP10>0?p.saleP10:null;
     const act5=sale5||p.p5, act10=sale10||(p.p10||null);
     const s5=[];
-    if(sale5) s5.push({t:'$'+p.p5,pt:PT_WAS*k,wt:400,col:'#999999',strike:true,gap:1.2*PT*k});
+    if(sale5) s5.push({t:'$'+p.p5,pt:PT_WAS*k,wt:400,col:'#999999',strike:true,gap:3*PT*k});
     s5.push({t:'$'+act5,pt:BODY*k,wt:700,col:sale5?'#b03030':GOLD});
     const s10=[];
     if(act10){
-      if(sale10) s10.push({t:'$'+p.p10,pt:PT_WAS*k,wt:400,col:'#999999',strike:true,gap:1.2*PT*k});
+      if(sale10) s10.push({t:'$'+p.p10,pt:PT_WAS*k,wt:400,col:'#999999',strike:true,gap:3*PT*k});
       s10.push({t:'$'+act10,pt:BODY*k,wt:700,col:sale10?'#b03030':GOLD});
     } else {
       s10.push({t:'—',pt:BODY*k,wt:400,col:GOLD,alpha:.30});
@@ -4220,25 +4300,41 @@ function drawCategoryCanvas(catDef,prods){
   rule(PAD_X,y,CONTENT_W,RULE_TOP,RULE);
   const fb=y+RULE_TOP+FACT_PAD+FACT_TXT*0.78;
   const LBL_GAP=1.5*MM;
-  function fact(lbl,val,x,align){
+  // Same pin and parcel icons as the website, drawn from the same 24×24 paths
+  const ICONS={
+    pin:['M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z','M14.6 10a2.6 2.6 0 1 1-5.2 0a2.6 2.6 0 1 1 5.2 0z'],
+    box:['M3 7l9-4 9 4v10l-9 4-9-4z','M3 7l9 4 9-4M12 11v10']
+  };
+  const ICON_S=7.5*PT, ICON_GAP=1.2*MM;
+  function drawIcon(name,x,base){
+    const s=ICON_S/24; c.save(); c.translate(x,base-ICON_S*0.86); c.scale(s,s);
+    c.strokeStyle=GOLD; c.lineWidth=2.2; c.lineCap='round'; c.lineJoin='round';
+    ICONS[name].forEach(d=>c.stroke(new Path2D(d))); c.restore();
+  }
+  function fact(lbl,val,x,align,icon){
     c.font=font(6,700,SANS); const lw=c.measureText(lbl).width;
     c.font=font(6,400,SANS); const vw=c.measureText(val).width;
-    const tot=lw+LBL_GAP+vw;
+    const iw=icon?ICON_S+ICON_GAP:0;
+    const tot=iw+lw+LBL_GAP+vw;
     const sx=align==='center'?x-tot/2:align==='right'?x-tot:x;
+    if(icon) drawIcon(icon,sx,fb);
     c.textAlign='left';
-    c.font=font(6,700,SANS); c.fillStyle=GOLD; c.fillText(lbl,sx,fb);
-    c.font=font(6,400,SANS); c.fillStyle='#e0e0e0'; c.fillText(val,sx+lw+LBL_GAP,fb);
+    c.font=font(6,700,SANS); c.fillStyle=GOLD; c.fillText(lbl,sx+iw,fb);
+    c.font=font(6,400,SANS); c.fillStyle='#e0e0e0'; c.fillText(val,sx+iw+lw+LBL_GAP,fb);
+    return tot;
   }
-  fact('PICKUP',SETTINGS.pickup,PAD_X,'left');
-  fact('POST','$'+SETTINGS.postageUntracked+' untracked · $'+SETTINGS.postageTracked+' tracked',W/2,'center');
+  // Pickup and Post sit side by side on the left, like on the website; Min stays on the right
+  const pw=fact('PICKUP',SETTINGS.pickup,PAD_X,'left','pin');
+  fact('POST','$'+SETTINGS.postageUntracked+' untracked · $'+SETTINGS.postageTracked+' tracked',PAD_X+pw+6*MM,'left','box');
   fact('MIN','$'+SETTINGS.minimum+' before postage',PAD_X+CONTENT_W,'right');
   rule(PAD_X,y+RULE_TOP+FACT_PAD+FACT_TXT+FACT_PAD,CONTENT_W,RULE_BOT,'rgba(201,168,114,.35)');
   y+=L2_H+3*MM;
 
   // category header
-  c.font=font(12,700,SANS); c.fillStyle=INK;
+  c.font=font(12,700,CATF); c.fillStyle=INK;
   const catBase=y+12*PT*1.35*0.78;
-  drawTracked(catDef.label.toUpperCase(),PAD_X,catBase,3*CSSPX,'left');
+  // centred; half a letter-space added back because tracking also follows the last letter
+  drawTracked(catDef.label.toUpperCase(),W/2+1.5*CSSPX,catBase,3*CSSPX,'center');
   // Per-column headers are drawn below instead — a single right-aligned line
   // here only ever labelled the right-hand column.
   y+=12*PT*1.35+1.5*MM;
@@ -4261,7 +4357,8 @@ function drawCategoryCanvas(catDef,prods){
     const hx=PAD_X+ci*(COL_W+COL_GAP);
     c.fillStyle=MUTED;
     c.textAlign='left';  c.fillText('FRAGRANCE',hx,hdrBase);
-    c.textAlign='right'; c.fillText('5ML · 10ML',hx+COL_W,hdrBase);
+    // each label right-aligned over its own price column, like the prices below it
+    c.textAlign='right'; c.fillText('5ML',hx+COL_W-SLOT_W,hdrBase); c.fillText('10ML',hx+COL_W,hdrBase);
     rule(hx,y+5.5*k*PT*1.35+0.8*MM,COL_W,0.4*PT,'rgba(201,168,114,.22)');
   });
   c.textAlign='left';
@@ -4273,7 +4370,7 @@ function drawCategoryCanvas(catDef,prods){
     let cy=listTop;
     brList.forEach(br=>{
       // brand name + hairline
-      c.font=font(PT_BRAND*k,700,SERIF); c.fillStyle=GOLD; c.textAlign='left';
+      c.font=font(PT_BRAND*k,600,BRANDF); c.fillStyle=GOLD; c.textAlign='left';
       c.fillText(br,x,cy+g.brandLineH*0.78);
       cy+=g.brandLineH+g.brandPad;
       rule(x,cy,COL_W,g.brandRule,'rgba(201,168,114,.25)');
@@ -4284,15 +4381,21 @@ function drawCategoryCanvas(catDef,prods){
         if(p.sold) c.globalAlpha=0.38;
         // prices first, each right-aligned inside its own fixed slot
         const sl=priceSlots(p,k);
-        if(sl.full) drawRuns(sl.full,x+COL_W,base);
-        else { drawRuns(sl.s5,x+COL_W-SLOT_W,base); drawRuns(sl.s10,x+COL_W,base); }
+        // Sale prices are wider than a slot; keep a clear gap so 5ml and 10ml never run together
+        let priceLeft;
+        if(sl.full){ drawRuns(sl.full,x+COL_W,base); priceLeft=x+COL_W-runsW(sl.full); }
+        else {
+          const r5=Math.min(x+COL_W-SLOT_W, x+COL_W-runsW(sl.s10)-2.5*MM);
+          drawRuns(sl.s5,r5,base); drawRuns(sl.s10,x+COL_W,base);
+          priceLeft=Math.min(x+COL_W-2*SLOT_W, r5-runsW(sl.s5));
+        }
         // name (+ ml qualifier) + badges, ellipsised into what is left
         const bList=p.sold?[]:badgesFor(p);
         let bw=0; bList.forEach(b=>bw+=badgeW(b,k));
         const mlq=mlQual(p);
         c.font=font(BODY*k,400,SANS);
         const qw=mlq?c.measureText(mlq).width:0;
-        const avail=COL_W-2*SLOT_W-2*MM-bw-qw;
+        const avail=(priceLeft-x)-2*MM-bw-qw;
         c.font=font(BODY*k,400,SANS); c.fillStyle='#e8e8e8'; c.textAlign='left';
         const nm=ellipsize(p.name,Math.max(20,avail));
         c.fillText(nm,x,base);
@@ -4307,7 +4410,7 @@ function drawCategoryCanvas(catDef,prods){
         const nt=exportNoteText(p);
         if(nt){
           c.font=font(PT_NOTE*k,400,SANS);
-          const room=(x+COL_W-2*SLOT_W-1.5*MM)-(nx+1.2*MM);
+          const room=(priceLeft-1.5*MM)-(nx+1.2*MM);
           const shown=fitCanvasText(c,'· '+nt,room);
           if(shown){
             // drawBadge() leaves fillStyle set to the badge's own colour, so
@@ -4337,12 +4440,41 @@ function drawCategoryCanvas(catDef,prods){
 
 
 
-// Scroll buttons
-window.addEventListener('scroll',()=>{
-  const atTop=window.scrollY<400;
+// "Where am I" strip under the filter bar: category and brand you're scrolling through.
+let _whereRaf=0;
+function updateWhere(){
+  _whereRaf=0;
+  const w=document.getElementById('where'),wt=document.getElementById('where-text'),fb=document.querySelector('.filter-bar');
+  const ed=document.getElementById('editor');
+  if(!w||!wt||!fb||(ed&&ed.style.display==='block')){if(w) w.hidden=true;return;}
+  // The strip hangs ~22px under the bar, so count anything just below it as 'here'.
+  const line=fb.getBoundingClientRect().bottom+32;
+  const secs=[...document.querySelectorAll('#catalog .cat-section')];
+  let sec=null;
+  for(const s of secs){if(s.getBoundingClientRect().top<=line) sec=s; else break;}
+  const head=sec&&sec.querySelector('.cat-head');
+  // Only once the category heading itself has scrolled under the bar
+  if(!sec||!head||head.getBoundingClientRect().bottom>line){w.hidden=true;return;}
+  const t=sec.querySelector('.cat-title');let cat='';
+  if(t) t.childNodes.forEach(n=>{if(n.nodeType===3) cat+=n.textContent;else if(n.classList&&!n.classList.contains('ct-x')) cat+=n.textContent;else if(n.classList&&getComputedStyle(n).display!=='none') cat+=n.textContent;});
+  let brand='';
+  for(const g of sec.querySelectorAll('.brand-group')){if(g.getBoundingClientRect().top<=line) brand=(g.querySelector('.brand-label')||{}).textContent||''; else break;}
+  const txt=cat.trim()+(brand?' · '+brand.trim():'');
+  if(wt.textContent!==txt) wt.textContent=txt;
+  w.hidden=false;
+}
+function queueWhere(){if(!_whereRaf) _whereRaf=requestAnimationFrame(updateWhere);}
+(function(){const c=document.getElementById('catalog');if(c&&window.MutationObserver) new MutationObserver(queueWhere).observe(c,{childList:true});})();
+window.addEventListener('scroll',queueWhere,{passive:true});
+window.addEventListener('resize',queueWhere);
+
+// Back-to-top arrow: hidden at the top of the page, appears once you scroll down
+function syncScrollTop(){
   const st=document.getElementById('scroll-top');
-  if(st) st.classList.toggle('show',!atTop);
-},{passive:true});
+  if(st) st.classList.toggle('show',window.scrollY>=400);
+}
+window.addEventListener('scroll',syncScrollTop,{passive:true});
+syncScrollTop();
 
 // ── UNSAVED CHANGES ───────────────────────────────────────────
 let hasUnsavedChanges=false;
@@ -4377,10 +4509,9 @@ function toggleViewDensity(){
 }
 // Restore preference on load
 (function(){
-  let v=null; try{v=localStorage.getItem('za_view_density');}catch(e){}
-  // The exported markup hard-codes class="compact", so an explicit
-  // "comfortable" choice has to actively remove it, not just skip adding it.
-  if(v) document.body.classList.toggle('compact', v==='compact');
+  // The view is always comfortable now; forget any old "compact" choice.
+  try{localStorage.removeItem('za_view_density');}catch(e){}
+  document.body.classList.remove('compact');
   const isCompact=document.body.classList.contains('compact');
   const btn=document.getElementById('opts-compact-btn');
   if(btn) btn.classList.toggle('compact-on',isCompact);
@@ -4687,20 +4818,26 @@ function renderTabs(){
   const saleCount=PRODUCTS.filter(p=>!p.hidden&&!p.sold&&((p.saleP5>0)||(p.saleP10>0))).length;
   el.innerHTML=
     `<button class="tab ${prev==='all'?'active':''}" data-cat="all">All</button>`+
-    `<button class="tab ${prev==='new'?'active':''}" data-cat="new">What's New</button>`+
-    `<button class="tab ${prev==='sale'?'active':''}" data-cat="sale">On Sale${saleCount?' <span class="tab-count">'+saleCount+'</span>':''}</button>`+
+    `<button class="tab ${prev==='new'?'active':''}" data-cat="new">New</button>`+
+    `<button class="tab ${prev==='sale'?'active':''}" data-cat="sale">Sale${saleCount?' <span class="tab-count">'+saleCount+'</span>':''}</button>`+
     ``;
   // Update category dropdown items + button label
   const catMenu=document.getElementById('cat-drop-menu');
   const catBtn=document.getElementById('cat-drop-btn');
   const catLabel=document.getElementById('cat-drop-label');
   if(catMenu){
-    catMenu.innerHTML=CATS.map(c=>`<button class="cat-drop-item${prev===c.key?' active':''}" data-cat="${c.key}" onclick="selectCatFromDrop('${c.key}')">${c.label}</button>`).join('');
+    // Each category with its brands listed underneath (A–Z, two columns)
+    catMenu.innerHTML=CATS.map(c=>{
+      const brands=[...new Set(PRODUCTS.filter(p=>!p.hidden&&p.cat===c.key).map(p=>p.brand))].sort((a,b)=>a.localeCompare(b));
+      return `<div class="md-group"><button class="cat-drop-item${prev===c.key?' active':''}" data-cat="${c.key}" onclick="selectCatFromDrop('${c.key}')">${c.label}</button>`+
+        `<div class="md-list">`+brands.map(b=>`<button class="brand-chip" data-brand="${adwEsc(b)}" onclick="jumpToBrand(this.dataset.brand)">${b}</button>`).join('')+`</div></div>`;
+    }).join('');
   }
   if(catBtn&&catLabel){
     const activeCat=CATS.find(c=>c.key===prev);
     catBtn.classList.toggle('active',!!activeCat);
-    catLabel.textContent=activeCat?activeCat.label:'Categories';
+    // Phones keep the short "Categories" so the tabs stay on one line; the gold underline shows a category is picked.
+    catLabel.innerHTML=activeCat?'<span class="cdl-full">'+activeCat.label+'</span><span class="cdl-short">'+activeCat.label.replace(/\s+Fragrances$/i,'')+'</span>':'Brands';
   }
 }
 
@@ -4719,6 +4856,21 @@ function toggleCatDrop(){
   const isOpen=m.classList.toggle('open');
   if(w) w.classList.toggle('open',isOpen);
   b.setAttribute('aria-expanded', isOpen);
+}
+// Phones hide a trailing " Fragrances" so every category title fits on one line.
+function catTitleHtml(label){
+  const m=String(label).match(/^(.*?)(\s+Fragrances)$/i);
+  return m?adwEsc(m[1])+'<span class="ct-x">'+adwEsc(m[2])+'</span>':adwEsc(label);
+}
+function jumpToBrand(brand){
+  document.getElementById('cat-drop-menu').classList.remove('open');
+  document.getElementById('cat-drop-wrap').classList.remove('open');
+  document.getElementById('cat-drop-btn').setAttribute('aria-expanded','false');
+  const find=()=>document.querySelector('#catalog .brand-group[data-brand="'+CSS.escape(brand)+'"]');
+  let el=find();
+  // The brand may be filtered out (a category tab, New, Sale or a search), so show everything first.
+  if(!el){selCat='all';const s=document.getElementById('search');if(s) s.value='';renderCatalog();renderTabs();el=find();}
+  if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function selectCatFromDrop(key){
   selCat=key;
