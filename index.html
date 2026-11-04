@@ -2271,6 +2271,7 @@ Total: $58</div>
       <span class="editor-title">Product Editor</span>
       <div class="editor-actions">
         <button class="e-btn green" onclick="openAddForm()">+ Add Fragrance</button>
+        <a class="e-btn" href="https://dash.cloudflare.com/?to=/:account/web-analytics" target="_blank" rel="noopener" style="text-decoration:none" title="Opens your Cloudflare Web Analytics dashboard">📊 Visitor stats</a>
         <button class="e-btn" onclick="closeEditor()">✕ Exit Editor</button>
       </div>
     </div>
@@ -3361,6 +3362,9 @@ function closeAdminModal(){
 }
 function checkAdmin(){
   if(document.getElementById('admin-pass').value===EDITOR_PASS){
+    // This device belongs to the owner: stop counting its visits from now on
+    try{localStorage.setItem('za_owner','1');}catch(e){}
+    const cf=document.getElementById('cf-beacon'); if(cf) cf.remove();
     closeAdminModal();openEditor();
   } else {
     document.getElementById('admin-err').style.display='block';
@@ -3777,6 +3781,7 @@ function downloadHTML(){
   const adwHtml=adwL?adwL.innerHTML:'';
   if(adwL) adwL.innerHTML='';
   // Keep the doctype: without it browsers fall back to an old compatibility mode.
+  { const cf=document.getElementById('cf-beacon'); if(cf) cf.remove(); }  // the site adds this itself on load
   const html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
   if(adwL) adwL.innerHTML=adwHtml;
   if(etb&&typeof renderEditorTable==='function') renderEditorTable();
@@ -4528,6 +4533,20 @@ function syncCartMore(){
   p.addEventListener('scroll',syncCartMore,{passive:true});window.addEventListener('resize',syncCartMore);
   if(window.MutationObserver) new MutationObserver(()=>requestAnimationFrame(syncCartMore)).observe(p,{childList:true,subtree:true,attributes:true,attributeFilter:['style']});
   syncCartMore();})();
+
+// ── VISITOR STATS (Cloudflare Web Analytics) ─────────────────
+// Privacy-friendly page-view counting, no cookies. Not loaded on the owner's own
+// devices (set when the editor is unlocked) or when the file is opened locally.
+(function(){
+  let owner=false; try{owner=localStorage.getItem('za_owner')==='1';}catch(e){}
+  if(owner||!/^https?:$/.test(location.protocol)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return;
+  if(document.getElementById('cf-beacon')) return;
+  const s=document.createElement('script');
+  s.id='cf-beacon'; s.defer=true;
+  s.src='https://static.cloudflareinsights.com/beacon.min.js';
+  s.setAttribute('data-cf-beacon','{"token": "a334a6a77b254f33ad20fdb52e4d108c"}');
+  document.body.appendChild(s);
+})();
 
 // Back-to-top arrow: hidden at the top of the page, appears once you scroll down
 function syncScrollTop(){
